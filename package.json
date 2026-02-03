@@ -1,0 +1,22 @@
+{
+  "name": "learning-javascript",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Anharn/learning-javascript#readme",
+  "bugs": {
+    "url": "https://github.com/Anharn/learning-javascript/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anharn/learning-javascript.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "esbuild": "^0.27.2"
+  }
+}

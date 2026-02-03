@@ -1,0 +1,6 @@
+[
+    {"name": "Minor Health Potion", "type": "Consumable", "heals": 1},
+    {"name": "Mana Potion", "type": "Consumable", "restores": 30},
+    {"name": "Iron Sword", "type": "Weapon", "damage": 1, "resilience": 5},
+    {"name": "Steel Shield", "type": "Armor", "damage": 0, "resilience": 20}
+]
