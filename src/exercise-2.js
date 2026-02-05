@@ -1,5 +1,6 @@
 import { Room } from "./game/room.js";
 import { Item } from "./game/item.js";
+import { Map } from "./game/map.js";
 
 /*
 ** Create a room.
@@ -24,3 +25,7 @@ import { Item } from "./game/item.js";
 
 /* Print the room again to see the item.
  */
+
+
+const gameMap = new Map();
+gameMap.look();

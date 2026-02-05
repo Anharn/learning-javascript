@@ -17,6 +17,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "esbuild": "^0.27.2"
+    "esbuild": "^0.27.2",
+    "prompt-sync": "^4.2.0"
   }
 }

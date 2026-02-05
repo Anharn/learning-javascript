@@ -1,0 +1,23 @@
+[
+  { "id": "room-entrance", "description": "You stand at the entrance of an old stone dungeon. Cool air drifts from within." },
+  { "id": "room-damp-hall", "description": "A damp corridor stretches ahead, the stone walls slick and cold." },
+  { "id": "room-flickering-torch", "description": "A small chamber lit by a flickering torch that throws long shadows." },
+  { "id": "room-abandoned-guardpost", "description": "An abandoned guard post with splintered chairs and scattered debris." },
+  { "id": "room-echoing-cavern", "description": "A wide cavern where your footsteps echo loudly into the dark." },
+  { "id": "room-mossy-steps", "description": "Moss-covered steps lead to a landing that smells faintly of earth." },
+  { "id": "room-dusty-library", "description": "Dusty shelves and torn scrolls fill a quiet, forgotten library." },
+  { "id": "room-hidden-alcove", "description": "A small hidden alcove, dry and still, like a place to catch your breath." },
+  { "id": "room-underground-stream", "description": "A narrow stream runs along the floor, its water cold and clear." },
+  { "id": "room-cracked-bridge", "description": "A cracked stone bridge spans a dark drop, the air cooler here." },
+
+  { "id": "room-forgotten-shrine", "description": "A forgotten shrine with worn carvings and a broken stone basin." },
+  { "id": "room-flooded-passage", "description": "Shallow water covers the floor of this passage, rippling as you move." },
+  { "id": "room-old-armory", "description": "An old armory with rusted racks and dented armor piled in corners." },
+  { "id": "room-webbed-corner", "description": "Thick webs hang from the ceiling, sticky strands brushing your shoulders." },
+  { "id": "room-collapsed-chamber", "description": "A collapsed chamber filled with rubble and cracked stone slabs." },
+  { "id": "room-crystal-glow", "description": "Pale crystals glow softly from the walls, lighting the room in blue." },
+  { "id": "room-windy-tunnel", "description": "A narrow tunnel where a steady wind carries distant, unknown sounds." },
+  { "id": "room-still-lake", "description": "A still underground lake reflects the ceiling like dark glass." },
+  { "id": "room-quiet-vault", "description": "A quiet vault with smooth stone walls and a heavy feeling in the air." },
+  { "id": "room-sealed-door", "description": "A sealed stone door stands here, marked with faint symbols and scratches." }
+]

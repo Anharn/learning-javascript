@@ -1,10 +1,12 @@
 export class Room {
+  id;
   description;
   enemies;
   items;
   connections;
 
-  constructor(description) {
+  constructor(description, id = null) {
+    this.id = id;
     this.description = description;
     this.enemies = [];
     this.items = [];
@@ -19,21 +21,29 @@ export class Room {
   }
 
   connect(direction, room) {
+    if (!this.connections.has(direction)) {
+      throw new Error(`Unknown direction: ${direction}`);
+    }
+
     this.connections.set(direction, room);
 
-    const oppositeDirections = {
-      north: "south",
-      south: "north",
-      east: "west",
-      west: "east",
-      up: "down",
-      down: "up"
-    };
+    const oppositeDirections = new Map([
+      ["north", "south"],
+      ["south", "north"],
+      ["east", "west"],
+      ["west", "east"],
+      ["up", "down"],
+      ["down", "up"]
+    ]);
 
-    const opposite = oppositeDirections[direction];
-    if (opposite) {
+    const opposite = oppositeDirections.get(direction);
+    if (opposite && room?.connections?.has(opposite)) {
       room.connections.set(opposite, this);
     }
+  }
+
+  getConnection(direction) {
+    return this.connections.get(direction) ?? null;
   }
 
   addEnemy(enemy) {
@@ -62,12 +72,20 @@ export class Room {
     }
 
     const passages = [];
-    this.connections.forEach((room, direction) => {
-      if (room) passages.push(direction);
+    this.connections.forEach((nextRoom, direction) => {
+      if (nextRoom) passages.push(direction);
     });
 
     if (passages.length > 0) {
       console.log(`Passages: ${passages.join(", ")}`);
     }
+  }
+
+  printDirections() {
+    const directions = [];
+    this.connections.forEach((nextRoom, direction) => {
+      if (nextRoom) directions.push(direction);
+    });
+    console.log(`Available directions: ${directions.join(", ")}`);
   }
 }

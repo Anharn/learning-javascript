@@ -1,6 +1,40 @@
 [
-    {"name": "Minor Health Potion", "type": "Consumable", "heals": 1},
-    {"name": "Mana Potion", "type": "Consumable", "restores": 30},
-    {"name": "Iron Sword", "type": "Weapon", "damage": 1, "resilience": 5},
-    {"name": "Steel Shield", "type": "Armor", "damage": 0, "resilience": 20}
+  { "id": "potion-health-minor", "name": "Minor Health Potion", "type": "Consumable", "heals": 5 },
+  { "id": "potion-health", "name": "Health Potion", "type": "Consumable", "heals": 15 },
+  { "id": "potion-health-major", "name": "Major Health Potion", "type": "Consumable", "heals": 30 },
+
+  { "id": "potion-mana-minor", "name": "Minor Mana Potion", "type": "Consumable", "restores": 5 },
+  { "id": "potion-mana", "name": "Mana Potion", "type": "Consumable", "restores": 15 },
+  { "id": "potion-mana-major", "name": "Major Mana Potion", "type": "Consumable", "restores": 30 },
+
+  { "id": "food-bread", "name": "Loaf of Bread", "type": "Consumable", "heals": 2 },
+  { "id": "food-cheese", "name": "Cheese Wheel", "type": "Consumable", "heals": 4 },
+  { "id": "food-apple", "name": "Shiny Apple", "type": "Consumable", "heals": 1 },
+  { "id": "food-meat", "name": "Cooked Meat", "type": "Consumable", "heals": 6 },
+
+  { "id": "weapon-dagger-rusty", "name": "Rusty Dagger", "type": "Weapon", "damage": 2, "resilience": 10 },
+  { "id": "weapon-sword-iron", "name": "Iron Sword", "type": "Weapon", "damage": 4, "resilience": 25 },
+  { "id": "weapon-sword-steel", "name": "Steel Sword", "type": "Weapon", "damage": 6, "resilience": 35 },
+  { "id": "weapon-axe-battle", "name": "Battle Axe", "type": "Weapon", "damage": 8, "resilience": 30 },
+  { "id": "weapon-mace-heavy", "name": "Heavy Mace", "type": "Weapon", "damage": 7, "resilience": 40 },
+  { "id": "weapon-spear-long", "name": "Long Spear", "type": "Weapon", "damage": 5, "resilience": 30 },
+  { "id": "weapon-bow-short", "name": "Short Bow", "type": "Weapon", "damage": 3, "resilience": 20 },
+
+  { "id": "armor-shield-wooden", "name": "Wooden Shield", "type": "Armor", "resilience": 15 },
+  { "id": "armor-shield-steel", "name": "Steel Shield", "type": "Armor", "resilience": 30 },
+  { "id": "armor-helmet-leather", "name": "Leather Helmet", "type": "Armor", "resilience": 10 },
+  { "id": "armor-helmet-iron", "name": "Iron Helmet", "type": "Armor", "resilience": 20 },
+  { "id": "armor-chest-leather", "name": "Leather Armor", "type": "Armor", "resilience": 25 },
+  { "id": "armor-chest-chainmail", "name": "Chainmail Armor", "type": "Armor", "resilience": 40 },
+  { "id": "armor-boots-travel", "name": "Traveler's Boots", "type": "Armor", "resilience": 8 },
+
+  { "id": "trinket-ring-health", "name": "Ring of Vitality", "type": "Trinket", "bonusHealth": 10 },
+  { "id": "trinket-ring-mana", "name": "Ring of Focus", "type": "Trinket", "bonusMana": 10 },
+  { "id": "trinket-amulet-protection", "name": "Amulet of Protection", "type": "Trinket", "resilience": 10 },
+  { "id": "trinket-charm-luck", "name": "Lucky Charm", "type": "Trinket", "bonusHealth": 5, "bonusMana": 5 },
+
+  { "id": "utility-torch", "name": "Torch", "type": "Utility" },
+  { "id": "utility-rope", "name": "Sturdy Rope", "type": "Utility" },
+  { "id": "utility-key-brass", "name": "Brass Key", "type": "Utility" },
+  { "id": "utility-map-old", "name": "Old Map", "type": "Utility" }
 ]
