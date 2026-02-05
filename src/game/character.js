@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 export class Character {
   id;
   name;
@@ -14,12 +16,13 @@ export class Character {
     this.mana = mana;
     this.items = [];
     this.equippedItem = null;
-    this.id = uuidv4();
 
     for (const [key, value] of Object.entries(template)) {
         this[key] = value;
     }
-    }
+    
+    this.id = randomUUID();
+  }
 
 
   acquireItem(item) {

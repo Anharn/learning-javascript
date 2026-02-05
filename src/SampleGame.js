@@ -54,17 +54,34 @@ function handleMove(direction) {
   context.map.look();
 }
 
-function enemyLoop(context) {
-  const activated = context.activatedEnemies;
-  context.activatedEnemies.forEach((enemy, room) => {
-    if (room.id !== context.map.getCurrentRoom().id) {
-        map.moveEnemies(room, context.map.getCurrentRoom());
+function enemyActivation(context) {
+  const room = context.map.currentRoom;
+  if (!room.enemies.length) return;
+
+  for (const enemy of room.enemies) {
+    const alreadyActive = context.activatedEnemies.some(actor => actor.enemy.id === enemy.id);
+    if (!alreadyActive) {
+      context.activatedEnemies.push({ enemy, room });
     }
-  });
+  }
 }
 
-registry.setEnemyLoop(enemyLoop);
+function enemyLoop(context) {
+  const currentRoom = context.map.getCurrentRoom();
+  const enemiesToMove = [];
+  context.activatedEnemies.forEach(({ enemy, room }) => {
+    if (room.id !== currentRoom.id) {
+      context.map.moveEnemies(room, currentRoom);
+      enemiesToMove.push(enemy.name);
+    }
+  });
+  enemiesToMove.length && 
+    console.log(`The enemie(s) have followed you. ${enemiesToMove.join(', ')} enters the room.`);
+}
+
 registry
+  .addPreCommandHook(() => enemyActivation(context))
+  .addPostCommandHook(() => enemyLoop(context))
   .register("help", () => printHelp())
   .register("quit", () => context.quit(), ["exit"])
   .register("look", () => context.map.look(), ["l"])

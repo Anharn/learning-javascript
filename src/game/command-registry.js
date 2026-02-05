@@ -2,7 +2,8 @@ import promptSync from "prompt-sync";
 
 export class CommandRegistry {
   commands;
-  enemyLoop;
+  preCommandHooks = [];
+  postCommandHooks = [];
   context;
 
   constructor(context) {
@@ -21,8 +22,14 @@ export class CommandRegistry {
     return this;
   }
 
-  setEnemyLoop(enemyLoop) {
-    this.enemyLoop = enemyLoop;
+  addPostCommandHook(hook) {
+    this.postCommandHooks.push(hook);
+    return this;
+  }
+
+  addPreCommandHook(hook) {
+    this.preCommandHooks.push(hook);
+    return this;
   }
 
   start({ map, player }) {
@@ -51,14 +58,13 @@ export class CommandRegistry {
         console.log("Unknown command. Type 'help'.");
         continue;
       }
-      const thisRoom = map.currentRoom;
-      if (thisRoom.enemies.length) {
-        thisRoom.enemies.array.forEach(enemy => {
-            this.context.activatedEnemies.push({ enemy, room: thisRoom });
-        });
+      for (const hook of this.preCommandHooks) {
+        hook(this.context, parsed.args, parsed.raw);
       }
       entry.handler(this.context, parsed.args, parsed.raw);
-      this.enemyLoop(this.context);
+      for (const hook of this.postCommandHooks) {
+        hook(this.context, parsed.args, parsed.raw);
+      }
     }
   }
 }

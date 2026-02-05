@@ -114,7 +114,7 @@ export class GameMap {
   }
 
   moveEnemies(fromRoom, toRoom) {
-    if (fromRoom.enemies.length === 0) return;
+    if (fromRoom.enemies?.length === 0) return;
 
     for (const enemy of fromRoom.enemies) {
         toRoom.addEnemy(enemy);
