@@ -26,6 +26,3 @@ import { Map } from "./game/map.js";
 /* Print the room again to see the item.
  */
 
-
-const gameMap = new Map();
-gameMap.look();

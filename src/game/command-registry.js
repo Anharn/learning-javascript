@@ -65,6 +65,7 @@ export class CommandRegistry {
       for (const hook of this.postCommandHooks) {
         hook(this.context, parsed.args, parsed.raw);
       }
+      this.context.messages.printMessagesAndClear();
     }
   }
 }

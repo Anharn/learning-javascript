@@ -1,23 +1,82 @@
 [
-  { "id": "room-entrance", "description": "You stand at the entrance of an old stone dungeon. Cool air drifts from within." },
-  { "id": "room-damp-hall", "description": "A damp corridor stretches ahead, the stone walls slick and cold." },
-  { "id": "room-flickering-torch", "description": "A small chamber lit by a flickering torch that throws long shadows." },
-  { "id": "room-abandoned-guardpost", "description": "An abandoned guard post with splintered chairs and scattered debris." },
-  { "id": "room-echoing-cavern", "description": "A wide cavern where your footsteps echo loudly into the dark." },
-  { "id": "room-mossy-steps", "description": "Moss-covered steps lead to a landing that smells faintly of earth." },
-  { "id": "room-dusty-library", "description": "Dusty shelves and torn scrolls fill a quiet, forgotten library." },
-  { "id": "room-hidden-alcove", "description": "A small hidden alcove, dry and still, like a place to catch your breath." },
-  { "id": "room-underground-stream", "description": "A narrow stream runs along the floor, its water cold and clear." },
-  { "id": "room-cracked-bridge", "description": "A cracked stone bridge spans a dark drop, the air cooler here." },
-
-  { "id": "room-forgotten-shrine", "description": "A forgotten shrine with worn carvings and a broken stone basin." },
-  { "id": "room-flooded-passage", "description": "Shallow water covers the floor of this passage, rippling as you move." },
-  { "id": "room-old-armory", "description": "An old armory with rusted racks and dented armor piled in corners." },
-  { "id": "room-webbed-corner", "description": "Thick webs hang from the ceiling, sticky strands brushing your shoulders." },
-  { "id": "room-collapsed-chamber", "description": "A collapsed chamber filled with rubble and cracked stone slabs." },
-  { "id": "room-crystal-glow", "description": "Pale crystals glow softly from the walls, lighting the room in blue." },
-  { "id": "room-windy-tunnel", "description": "A narrow tunnel where a steady wind carries distant, unknown sounds." },
-  { "id": "room-still-lake", "description": "A still underground lake reflects the ceiling like dark glass." },
-  { "id": "room-quiet-vault", "description": "A quiet vault with smooth stone walls and a heavy feeling in the air." },
-  { "id": "room-sealed-door", "description": "A sealed stone door stands here, marked with faint symbols and scratches." }
+  {
+    "typeid": "room-001",
+    "description": "A modest stone kitchen with a heavy oak table at the center and shelves lined with clay jars. A cold hearth dominates one wall, suggesting it has not been used in some time. The air smells faintly of herbs and old smoke, but everything is otherwise quiet and still."
+  },
+  {
+    "typeid": "room-002",
+    "description": "This appears to be a former guard barracks with several simple bunks arranged neatly along the walls. A few footlockers sit at the ends of the beds, some slightly open. Dust covers most surfaces, but the room feels structurally sound."
+  },
+  {
+    "typeid": "room-003",
+    "description": "A spacious library filled with tall wooden bookcases, many still holding weathered volumes. A large reading table sits near the center with a single overturned chair beside it. Light filters in faintly through a high window, giving the room a calm, scholarly feel."
+  },
+  {
+    "typeid": "room-004",
+    "description": "This room looks like a workshop, with a sturdy bench covered in tools and scraps of metal. A forge sits cold in the corner, its chimney stretching upward. The scent of iron and ash lingers in the air."
+  },
+  {
+    "typeid": "room-005",
+    "description": "A comfortable sitting room with faded rugs and a pair of worn armchairs near a small table. A cracked portrait hangs slightly crooked on the wall. Despite its age, the room still feels welcoming."
+  },
+  {
+    "typeid": "room-006",
+    "description": "An old dining hall with a long wooden table stretching almost the full length of the space. Several chairs remain upright, though a few have toppled over. The atmosphere suggests it once hosted lively gatherings."
+  },
+  {
+    "typeid": "room-007",
+    "description": "A tidy study chamber with a writing desk placed beneath a narrow window. Papers lie scattered across the surface, some curled with age. The room feels quiet and contemplative."
+  },
+  {
+    "typeid": "room-008",
+    "description": "A storage pantry with sturdy shelves holding empty crates and baskets. A faint smell of dried grain remains in the air. The space is functional and plain, clearly meant for practicality."
+  },
+  {
+    "typeid": "room-009",
+    "description": "This bedroom contains a neatly made bed, a small wardrobe, and a simple washstand. The linens are old but clean. The room has a peaceful, lived-in feel."
+  },
+  {
+    "typeid": "room-010",
+    "description": "A bathing room with a large stone tub and several clay pitchers nearby. Moisture stains the walls slightly, hinting at frequent past use. The space feels utilitarian but well designed."
+  },
+  {
+    "typeid": "room-011",
+    "description": "A modest chapel room with wooden benches arranged toward a small altar. Candlesticks sit unlit, coated in wax drips from previous services. The atmosphere is calm and reflective."
+  },
+  {
+    "typeid": "room-012",
+    "description": "This music room holds a dusty upright piano and several wooden stands for instruments. Sheet music lies scattered across the floor. The acoustics here are surprisingly warm."
+  },
+  {
+    "typeid": "room-013",
+    "description": "A classroom-like space with a chalkboard and rows of simple desks. Chalk dust still clings faintly to the board. The room feels educational rather than formal."
+  },
+  {
+    "typeid": "room-014",
+    "description": "An indoor garden room where planter boxes line the walls. Most plants are gone, but traces of soil and irrigation channels remain. The air feels slightly fresher here."
+  },
+  {
+    "typeid": "room-015",
+    "description": "A tailor’s workspace with a large cutting table and several bolts of faded cloth. Needles and thread spools remain carefully arranged. The room feels meticulous and craft-focused."
+  },
+  {
+    "typeid": "room-016",
+    "description": "A modest office with a ledger desk, a high-backed chair, and locked cabinets. Papers remain stacked neatly, suggesting an organized occupant. The setting feels administrative."
+  },
+  {
+    "typeid": "room-017",
+    "description": "A guest bedroom with a small bed, a nightstand, and a single chair near the wall. The décor is minimal but tasteful. It feels prepared for short stays rather than permanent residence."
+  },
+  {
+    "typeid": "room-018",
+    "description": "A trophy room displaying empty mounts and pedestals where objects once stood. Dust outlines hint at missing artifacts. The room carries a faint sense of past pride."
+  },
+  {
+    "typeid": "room-019",
+    "description": "A map room with a large central table once used for planning. Several faded charts hang on the walls. The environment suggests strategic discussion once occurred here."
+  },
+  {
+    "typeid": "room-020",
+    "description": "A lounge area with low couches, a circular rug, and a small fireplace. The seating arrangement encourages conversation. The atmosphere feels relaxed despite the age of the furnishings."
+  }
 ]

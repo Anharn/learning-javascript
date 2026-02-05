@@ -1,6 +1,4 @@
-import { Room } from "./room.js";
-import { Character } from "./character.js";
-import { Item } from "./item.js";
+import { Room, Character, Item } from "./index.js";
 
 import roomTemplates from "../data/rooms.json" with { type: "json" };
 import enemyTemplates from "../data/enemies.json" with { type: "json" };
@@ -18,36 +16,43 @@ export class GameMap {
   }
 
   buildRooms(roomTemplates) {
-    return roomTemplates.map(t => new Room(t.description, t.id));
+    return roomTemplates.map(template => new Room(template.description, template.typeid));
   }
 
   connectRoomsRandomly(rooms) {
     const directions = ["north", "south", "east", "west", "up", "down"];
-
     const shuffledRooms = [...rooms];
     this.shuffleInPlace(shuffledRooms);
 
-    for (let i = 1; i < shuffledRooms.length; i++) {
-      const a = shuffledRooms[i - 1];
-      const b = shuffledRooms[i];
+    for (let index = 1; index < shuffledRooms.length; index++) {
+      const previousRoom = shuffledRooms[index - 1];
+      const nextRoom = shuffledRooms[index];
 
-      const available = directions.filter(d => a.getConnection(d) === null);
-      const direction = available.length > 0 ? this.pickRandom(available) : this.pickRandom(directions);
+      const availableDirections = directions.filter(direction => previousRoom.getConnection(direction) === null);
+      const chosenDirection = availableDirections.length ? this.pickRandom(availableDirections) : this.pickRandom(directions);
 
-      a.connect(direction, b);
+      previousRoom.connect(chosenDirection, nextRoom);
     }
 
     const extraConnections = Math.max(0, Math.floor(rooms.length / 2));
-    for (let i = 0; i < extraConnections; i++) {
-      const a = this.pickRandom(rooms);
-      const b = this.pickRandom(rooms);
-      if (a === b) continue;
+    for (let index = 0; index < extraConnections; index++) {
+      const fromRoom = this.pickRandom(rooms);
+      const toRoom = this.pickRandom(rooms);
+      if (fromRoom === toRoom) continue;
 
-      const available = directions.filter(d => a.getConnection(d) === null);
-      if (available.length === 0) continue;
+      const availableDirections = directions.filter(direction => fromRoom.getConnection(direction) === null);
+      if (!availableDirections.length) continue;
 
-      a.connect(this.pickRandom(available), b);
+      fromRoom.connect(this.pickRandom(availableDirections), toRoom);
     }
+  }
+
+  createItem(itemTemplate) {
+    return new Item(itemTemplate);
+  }
+
+  createRandomItem() {
+    return this.createItem(this.pickRandom(itemTemplates));
   }
 
   populateRooms(rooms, enemyTemplates, itemTemplates) {
@@ -56,53 +61,74 @@ export class GameMap {
 
       if (enemyRoll < 0.5) {
         if (Math.random() < 0.1) {
-          const item = this.createItem(this.pickRandom(itemTemplates));
+          const item = new Item(this.pickRandom(itemTemplates));
           room.addItem(item);
         }
         continue;
-      } else {
-        const d10 = this.randomIntInclusive(1, 10);
-        const enemyCount = d10 <= 6 ? 1 : d10 <= 9 ? 2 : 3;
-        for (let i = 0; i < enemyCount; i++) {
-            const enemyTemplate = this.pickRandom(enemyTemplates);
+      }
 
-            const enemy = new Character(
-            enemyTemplate.name,
-            enemyTemplate.health,
-            enemyTemplate.mana,
-            { id: enemyTemplate.id }
-            );
+      const roll = this.randomIntInclusive(1, 10);
+      const enemyCount = roll <= 6 ? 1 : roll <= 9 ? 2 : 3;
 
-            const item = this.createItem(this.pickRandom(itemTemplates));
-            enemy.acquireItem(item);
+      for (let index = 0; index < enemyCount; index++) {
+        const enemyTemplate = this.pickRandom(enemyTemplates);
 
-            if (item.type === "Weapon") {
-            enemy.equipWeapon(item);
-            }
+        const enemy = new Character(
+          enemyTemplate.name,
+          enemyTemplate.health,
+          enemyTemplate.mana,
+          { typeid: enemyTemplate.typeid }
+        );
 
-            room.addEnemy(enemy);
+        if (enemyTemplate.equippedItemTemplate) {
+          enemy.equipItem(new Item(enemyTemplate.equippedItemTemplate));
+        } else {
+          const item = new Item(this.pickRandom(itemTemplates));
+          enemy.acquireItem(item);
+          if (item.type === "Weapon") enemy.equipWeapon(item);
         }
+
+        if (Array.isArray(enemyTemplate.spellTypeids)) {
+          enemy.spellTypeids = [...enemyTemplate.spellTypeids];
+        }
+
+        room.addEnemy(enemy);
       }
     }
   }
 
-  createItem(itemTemplate) {
-    return new Item(itemTemplate);
+  look(messages) {
+    const description = this.currentRoom.getRoomDescription();
+    messages?.push(...description);
+    return description;
   }
 
   move(direction) {
-    const next = this.currentRoom.getConnection(direction);
-    if (!next) return false;
-    this.currentRoom = next;
+    const nextRoom = this.currentRoom.getConnection(direction);
+    if (!nextRoom) return false;
+    this.currentRoom = nextRoom;
     return true;
   }
 
-  look() {
-    this.currentRoom.printRoom();
+  moveEnemies(fromRoom, toRoom, messages) {
+    if (!fromRoom?.enemies?.length) return [];
+
+    const movedEnemyNames = [];
+    const enemiesToMove = [...fromRoom.enemies];
+
+    for (const enemy of enemiesToMove) {
+      toRoom.addEnemy(enemy, messages);
+      movedEnemyNames.push(enemy.name ?? String(enemy));
+    }
+
+    fromRoom.enemies = [];
+    return movedEnemyNames;
   }
 
-  getCurrentRoom() {
-    return this.currentRoom;
+  printCurrentDirections(messages) {
+    const directions = this.currentRoom.getDirections();
+    messages?.push(...directions);
+    return directions;
   }
 
   getAvailableDirections() {
@@ -113,18 +139,8 @@ export class GameMap {
     return directions;
   }
 
-  moveEnemies(fromRoom, toRoom) {
-    if (fromRoom.enemies?.length === 0) return;
-
-    for (const enemy of fromRoom.enemies) {
-        toRoom.addEnemy(enemy);
-    }
-
-    fromRoom.enemies = [];
-  }
-
-  printCurrentDirections() {
-    this.currentRoom.printDirections();
+  getCurrentRoom() {
+    return this.currentRoom;
   }
 
   pickRandom(list) {
@@ -136,11 +152,11 @@ export class GameMap {
   }
 
   shuffleInPlace(list) {
-    for (let i = list.length - 1; i > 0; i--) {
-      const j = this.randomIntInclusive(0, i);
-      const tmp = list[i];
-      list[i] = list[j];
-      list[j] = tmp;
+    for (let index = list.length - 1; index > 0; index--) {
+      const swapIndex = this.randomIntInclusive(0, index);
+      const temp = list[index];
+      list[index] = list[swapIndex];
+      list[swapIndex] = temp;
     }
   }
 }

@@ -1,36 +1,92 @@
 [
-  { "id": "enemy-rat", "name": "Giant Rat", "health": 5, "mana": 0 },
-  { "id": "enemy-bat", "name": "Cave Bat", "health": 4, "mana": 0 },
-  { "id": "enemy-slime-green", "name": "Green Slime", "health": 6, "mana": 0 },
-  { "id": "enemy-goblin-scout", "name": "Goblin Scout", "health": 8, "mana": 0 },
-  { "id": "enemy-goblin-warrior", "name": "Goblin Warrior", "health": 12, "mana": 0 },
-  { "id": "enemy-skeleton", "name": "Skeleton", "health": 10, "mana": 0 },
-  { "id": "enemy-zombie", "name": "Zombie", "health": 14, "mana": 0 },
-  { "id": "enemy-bandit", "name": "Bandit", "health": 15, "mana": 0 },
-  { "id": "enemy-bandit-leader", "name": "Bandit Leader", "health": 22, "mana": 0 },
-  { "id": "enemy-wolf", "name": "Wild Wolf", "health": 12, "mana": 0 },
+  { "typeid": "enemy-rat", "name": "Giant Rat", "health": 5, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-bite", "name": "Bite", "type": "Natural", "damage": 1, "resilience": 999 }
+  },
+  { "typeid": "enemy-bat", "name": "Cave Bat", "health": 4, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-bite", "name": "Bite", "type": "Natural", "damage": 1, "resilience": 999 }
+  },
+  { "typeid": "enemy-slime-green", "name": "Green Slime", "health": 6, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-acid", "name": "Acid Touch", "type": "Natural", "damage": 2, "resilience": 999 }
+  },
+  { "typeid": "enemy-goblin-scout", "name": "Goblin Scout", "health": 8, "mana": 0 },
+  { "typeid": "enemy-goblin-warrior", "name": "Goblin Warrior", "health": 12, "mana": 0 },
+  { "typeid": "enemy-skeleton", "name": "Skeleton", "health": 10, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-bone-claws", "name": "Bone Claws", "type": "Natural", "damage": 2, "resilience": 999 }
+  },
+  { "typeid": "enemy-zombie", "name": "Zombie", "health": 14, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-slam", "name": "Slam", "type": "Natural", "damage": 2, "resilience": 999 }
+  },
+  { "typeid": "enemy-bandit", "name": "Bandit", "health": 15, "mana": 0 },
+  { "typeid": "enemy-bandit-leader", "name": "Bandit Leader", "health": 22, "mana": 0 },
+  { "typeid": "enemy-wolf", "name": "Wild Wolf", "health": 12, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-bite", "name": "Bite", "type": "Natural", "damage": 3, "resilience": 999 }
+  },
 
-  { "id": "enemy-spider-small", "name": "Cave Spider", "health": 7, "mana": 0 },
-  { "id": "enemy-spider-giant", "name": "Giant Spider", "health": 18, "mana": 0 },
-  { "id": "enemy-orc-grunt", "name": "Orc Grunt", "health": 20, "mana": 0 },
-  { "id": "enemy-orc-brute", "name": "Orc Brute", "health": 28, "mana": 0 },
-  { "id": "enemy-troll", "name": "Troll", "health": 40, "mana": 0 },
+  { "typeid": "enemy-spider-small", "name": "Cave Spider", "health": 7, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-fangs", "name": "Fangs", "type": "Natural", "damage": 2, "resilience": 999 }
+  },
+  { "typeid": "enemy-spider-giant", "name": "Giant Spider", "health": 18, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-fangs", "name": "Fangs", "type": "Natural", "damage": 4, "resilience": 999 }
+  },
+  { "typeid": "enemy-orc-grunt", "name": "Orc Grunt", "health": 20, "mana": 0 },
+  { "typeid": "enemy-orc-brute", "name": "Orc Brute", "health": 28, "mana": 0 },
+  { "typeid": "enemy-troll", "name": "Troll", "health": 40, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-claws", "name": "Claws", "type": "Natural", "damage": 6, "resilience": 999 }
+  },
 
-  { "id": "enemy-apprentice-mage", "name": "Dark Apprentice", "health": 14, "mana": 10 },
-  { "id": "enemy-cultist", "name": "Cursed Cultist", "health": 16, "mana": 12 },
-  { "id": "enemy-fire-sprite", "name": "Fire Sprite", "health": 10, "mana": 20 },
-  { "id": "enemy-ice-wisp", "name": "Ice Wisp", "health": 12, "mana": 18 },
-  { "id": "enemy-necromancer", "name": "Necromancer", "health": 25, "mana": 35 },
+  { "typeid": "enemy-apprentice-mage", "name": "Dark Apprentice", "health": 14, "mana": 10,
+    "spellTypeids": ["spell-shadow-bolt"]
+  },
+  { "typeid": "enemy-cultist", "name": "Cursed Cultist", "health": 16, "mana": 12,
+    "spellTypeids": ["spell-shadow-bolt", "spell-weak-curse"]
+  },
+  { "typeid": "enemy-fire-sprite", "name": "Fire Sprite", "health": 10, "mana": 20,
+    "equippedItemTemplate": { "typeid": "natural-burn", "name": "Burning Touch", "type": "Natural", "damage": 2, "resilience": 999 },
+    "spellTypeids": ["spell-fire-spark"]
+  },
+  { "typeid": "enemy-ice-wisp", "name": "Ice Wisp", "health": 12, "mana": 18,
+    "equippedItemTemplate": { "typeid": "natural-chill", "name": "Chilling Touch", "type": "Natural", "damage": 2, "resilience": 999 },
+    "spellTypeids": ["spell-ice-shard"]
+  },
+  { "typeid": "enemy-necromancer", "name": "Necromancer", "health": 25, "mana": 35,
+    "spellTypeids": ["spell-shadow-bolt", "spell-life-drain", "spell-raise-bones"]
+  },
 
-  { "id": "enemy-ghost", "name": "Restless Ghost", "health": 18, "mana": 25 },
-  { "id": "enemy-shadow-stalker", "name": "Shadow Stalker", "health": 22, "mana": 15 },
-  { "id": "enemy-animated-armor", "name": "Animated Armor", "health": 30, "mana": 0 },
-  { "id": "enemy-harpy", "name": "Harpy", "health": 20, "mana": 10 },
-  { "id": "enemy-minotaur", "name": "Minotaur", "health": 45, "mana": 0 },
+  { "typeid": "enemy-ghost", "name": "Restless Ghost", "health": 18, "mana": 25,
+    "equippedItemTemplate": { "typeid": "natural-haunt", "name": "Haunting Touch", "type": "Natural", "damage": 3, "resilience": 999 },
+    "spellTypeids": ["spell-fear-whisper"]
+  },
+  { "typeid": "enemy-shadow-stalker", "name": "Shadow Stalker", "health": 22, "mana": 15,
+    "equippedItemTemplate": { "typeid": "natural-claws", "name": "Claws", "type": "Natural", "damage": 5, "resilience": 999 },
+    "spellTypeids": ["spell-shadow-step"]
+  },
+  { "typeid": "enemy-animated-armor", "name": "Animated Armor", "health": 30, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-slam", "name": "Heavy Slam", "type": "Natural", "damage": 5, "resilience": 999 }
+  },
+  { "typeid": "enemy-harpy", "name": "Harpy", "health": 20, "mana": 10,
+    "equippedItemTemplate": { "typeid": "natural-talons", "name": "Talons", "type": "Natural", "damage": 4, "resilience": 999 },
+    "spellTypeids": ["spell-sonic-screech"]
+  },
+  { "typeid": "enemy-minotaur", "name": "Minotaur", "health": 45, "mana": 0,
+    "equippedItemTemplate": { "typeid": "natural-gore", "name": "Gore", "type": "Natural", "damage": 8, "resilience": 999 }
+  },
 
-  { "id": "enemy-drake-young", "name": "Young Drake", "health": 50, "mana": 15 },
-  { "id": "enemy-dragon-whelp", "name": "Dragon Whelp", "health": 60, "mana": 25 },
-  { "id": "enemy-dungeon-guardian", "name": "Dungeon Guardian", "health": 80, "mana": 20 },
-  { "id": "enemy-warlock-lord", "name": "Warlock Lord", "health": 70, "mana": 60 },
-  { "id": "enemy-lich-king", "name": "Lich King", "health": 100, "mana": 100 }
+  { "typeid": "enemy-drake-young", "name": "Young Drake", "health": 50, "mana": 15,
+    "equippedItemTemplate": { "typeid": "natural-bite", "name": "Bite", "type": "Natural", "damage": 7, "resilience": 999 },
+    "spellTypeids": ["spell-fire-breath-minor"]
+  },
+  { "typeid": "enemy-dragon-whelp", "name": "Dragon Whelp", "health": 60, "mana": 25,
+    "equippedItemTemplate": { "typeid": "natural-claws", "name": "Claws", "type": "Natural", "damage": 8, "resilience": 999 },
+    "spellTypeids": ["spell-fire-breath"]
+  },
+  { "typeid": "enemy-dungeon-guardian", "name": "Dungeon Guardian", "health": 80, "mana": 20,
+    "equippedItemTemplate": { "typeid": "natural-slam", "name": "Crushing Slam", "type": "Natural", "damage": 10, "resilience": 999 },
+    "spellTypeids": ["spell-warding-pulse"]
+  },
+  { "typeid": "enemy-warlock-lord", "name": "Warlock Lord", "health": 70, "mana": 60,
+    "spellTypeids": ["spell-shadow-bolt", "spell-life-drain", "spell-fire-spark", "spell-shadow-step"]
+  },
+  { "typeid": "enemy-lich-king", "name": "Lich King", "health": 100, "mana": 100,
+    "spellTypeids": ["spell-shadow-bolt", "spell-life-drain", "spell-raise-bones", "spell-fear-whisper", "spell-death-nova"]
+  }
 ]
