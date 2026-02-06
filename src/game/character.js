@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { MessageBus } from "./messages.js";
 
 export class Character {
   id;
@@ -8,265 +9,262 @@ export class Character {
   damage = 0;
   mana;
   usedMana = 0;
-  items;
-  equippedItem;
-  spells;
-  spellTypeids;
+  items = [];
+  equippedItem = null;
+  spells = [];
+  spellTypeids = [];
   dead = false;
+  messages = MessageBus;
 
   constructor(name, health, mana, template = {}) {
     this.name = name;
     this.health = health;
     this.mana = mana;
-    this.items = [];
-    this.equippedItem = null;
-    this.spells = [];
-    this.spellTypeids = [];
+    Object.assign(this, template);
 
-    for (const [key, value] of Object.entries(template)) {
-      this[key] = value;
-    }
-
-    this.id = randomUUID();
-  }
-
-  acquireItem(item, messages) {
-    this.items.push(item);
-
-    const addedMessages = [`${this.name} acquires ${item?.name ?? item}.`];
-    messages?.push(...addedMessages);
-    return addedMessages;
-  }
-
-  addSpell(spell, messages) {
-    if (!spell) {
-      const addedMessages = ["No spell to add."];
-      messages?.push(...addedMessages);
-      return addedMessages;
-    }
-
-    this.spells.push(spell);
-
-    const addedMessages = [`${this.name} learns ${spell?.name ?? spell}.`];
-    messages?.push(...addedMessages);
-    return addedMessages;
-  }
-
-  affectedBySpell(spell, caster, messages) {
-    if (!spell) {
-      const affectedMessages = ["No spell affected anything."];
-      messages?.push(...affectedMessages);
-      return affectedMessages;
-    }
-
-    const spellName = spell?.name ?? "a spell";
-    const spellDamage = Number.isFinite(spell?.damage) ? spell.damage : 0;
-    const healCasterAmount = Number.isFinite(spell?.healsUser) ? spell.healsUser : 0;
-
-    const affectedMessages = [];
-
-    if (spellDamage > 0) {
-      this.damage += spellDamage;
-      affectedMessages.push(`${this.name} is hit by ${spellName} for ${spellDamage} damage.`);
-    } else {
-      affectedMessages.push(`${this.name} is affected by ${spellName}.`);
-    }
-
-    if (caster && healCasterAmount > 0) {
-      caster.damage = Math.max(0, caster.damage - healCasterAmount);
-      affectedMessages.push(`${caster.name} recovers ${healCasterAmount} health.`);
-    }
-
-    if (this.isDead()) {
-      this.dead = true;
-      affectedMessages.push(`${this.name} is defeated.`);
-    }
-
-    messages?.push(...affectedMessages);
-    return affectedMessages;
-  }
-
-  attacked(enemy, messages) {
-    const weaponDamage =
-      enemy?.equippedItem?.type === "Weapon" || enemy?.equippedItem?.type === "Natural"
-        ? enemy.equippedItem?.damage ?? 2
-        : 1;
-
-    this.damage += weaponDamage;
-
-    const attackedMessages = [`${enemy.name} attacks ${this.name} for ${weaponDamage} damage.`];
-
-    if (this.isDead()) {
-      this.dead = true;
-      attackedMessages.push(`${this.name} is defeated.`);
-    }
-
-    messages?.push(...attackedMessages);
-    return attackedMessages;
+    this.id = this.id || randomUUID();
   }
 
   currentHealth() {
-    return this.health - this.damage;
-  }
-
-  equipItem(item, messages) {
-    if (!item) {
-      const equipMessages = ["Nothing to equip."];
-      messages?.push(...equipMessages);
-      return equipMessages;
-    }
-
-    this.equippedItem = item;
-
-    const equipMessages = [`${this.name} equips ${item.name ?? item}.`];
-    messages?.push(...equipMessages);
-    return equipMessages;
-  }
-
-  equipWeapon(weapon, messages) {
-    return this.equipItem(weapon, messages);
+    return Math.max(0, this.health - this.damage);
   }
 
   isDead() {
-    return this.dead === true || this.currentHealth() <= 0;
+    return this.dead || this.currentHealth() <= 0;
   }
 
-  printCharacter(messages) {
-    const characterMessages = [];
-    characterMessages.push(`Name: ${this.name}`);
-    characterMessages.push(`Health: ${this.currentHealth()}`);
-    characterMessages.push(`Mana: ${this.mana - this.usedMana}`);
-
-    if (this.equippedItem) {
-      characterMessages.push(`Equipped Item: ${this.equippedItem.name ?? this.equippedItem}`);
+  applyDamage(amount) {
+    this.damage += amount;
+    if (this.isDead()) {
+      this.dead = true;
     }
-
-    if (this.spells?.length) {
-      characterMessages.push("Spells:");
-      for (const spell of this.spells) {
-        characterMessages.push(`- ${spell.name ?? spell}`);
-      }
-    }
-
-    if (this.items.length > 0) {
-      characterMessages.push("Items:");
-      for (const item of this.items) {
-        characterMessages.push(`- ${item.name ?? item}`);
-      }
-    }
-
-    messages?.push(...characterMessages);
-    return characterMessages;
   }
 
-  search(messages) {
+  applyHeal(amount) {
+    this.damage = Math.max(0, this.damage - amount);
+  }
+
+  applyManaGain(amount) {
+    this.usedMana = Math.max(0, this.usedMana - amount);
+  }
+
+  acquireItem(item) {
+    this.items.push(item);
+    if (item.bonusHealth) {
+      this.health += item.bonusHealth;
+    }
+    if (item.bonusMana) {
+      this.mana += item.bonusMana;
+    }
+    this.messages.addMessages(`${this.name} acquires ${item?.name ?? item}.`);
+    return true;
+  }
+
+  dropItem(itemName) {
+    const lowerName = (itemName ?? "").trim().toLowerCase();
+    const itemIndex = this.items.findIndex(
+      (i) => (i.name ?? "").toLowerCase() === lowerName,
+    );
+
+    if (itemIndex === -1) {
+      this.messages.addMessages(`You do not have "${itemName}".`);
+      return null;
+    }
+
+    const item = this.items.splice(itemIndex, 1)[0];
+    if (item.bonusHealth) {
+      this.health -= item.bonusHealth;
+    }
+    if (item.bonusMana) {
+      this.mana -= item.bonusMana;
+    }
+    if (this.equippedItem && this.equippedItem.id === item.id) {
+      this.equippedItem = null;
+    }
+    this.messages.addMessages(`You drop ${item.name ?? item}.`);
+    return item;
+  }
+
+  addSpell(spell) {
+    if (!spell) {
+      this.messages.addMessages("No spell to add.");
+      return false;
+    }
+    this.spells.push(spell);
+    this.messages.addMessages(`${this.name} learns ${spell?.name ?? spell}.`);
+    return true;
+  }
+
+  equipItem(item) {
+    if (!item) {
+      this.messages.addMessages("Nothing to equip.");
+      return false;
+    }
+    this.equippedItem = item;
+    this.messages.addMessages(`${this.name} equips ${item.name ?? item}.`);
+    return true;
+  }
+
+  search() {
     if (!this.isDead()) {
-      const searchMessages = [`${this.name} is not defeated.`];
-      messages?.push(...searchMessages);
-      return { items: [], messages: searchMessages };
+      this.messages.addMessages(`${this.name} is not defeated.`);
+      return false;
     }
 
-    if (!this.items?.length) {
-      const searchMessages = [`You search ${this.name} but find nothing.`];
-      messages?.push(...searchMessages);
-      return { items: [], messages: searchMessages };
+    const uniqueLoot = new Set(this.items);
+    if (this.equippedItem) {
+      uniqueLoot.add(this.equippedItem);
     }
 
-    const foundItems = [...this.items];
+    const lootableItems = Array.from(uniqueLoot).filter(
+      (item) => item.type !== "Natural",
+    );
+
     this.items = [];
+    this.equippedItem = null;
 
-    const searchMessages = [`You search ${this.name} and find:`];
-    for (const item of foundItems) {
-      searchMessages.push(`- ${item.name ?? item}`);
+    if (lootableItems.length === 0) {
+      this.messages.addMessages(
+        `You search ${this.name} but find nothing useful.`,
+      );
+      return { items: [] };
     }
 
-    messages?.push(...searchMessages);
-    return { items: foundItems, messages: searchMessages };
+    this.messages.addMessages(`You search ${this.name} and find:`);
+    lootableItems.forEach((item) =>
+      this.messages.addMessages(`- ${item.name}`),
+    );
+
+    return { items: lootableItems };
   }
 
-  take(source, itemName, messages) {
+  take(source, itemName) {
     const normalizedItemName = (itemName ?? "").trim();
     if (!normalizedItemName) {
-      const takeMessages = ["Usage: take <item name>"];
-      messages?.push(...takeMessages);
-      return { item: null, messages: takeMessages };
+      this.messages.addMessages("Usage: take <item name>");
+      return null;
     }
 
-    if (!source || !Array.isArray(source.items)) {
-      const takeMessages = ["There is nothing to take from."];
-      messages?.push(...takeMessages);
-      return { item: null, messages: takeMessages };
+    if (!source?.items) {
+      this.messages.addMessages("There is nothing to take from.");
+      return null;
     }
 
     if (source instanceof Character && !source.isDead()) {
-      const takeMessages = ["You can only take items from a defeated enemy."];
-      messages?.push(...takeMessages);
-      return { item: null, messages: takeMessages };
+      this.messages.addMessages(
+        "You can only take items from a defeated enemy.",
+      );
+      return null;
     }
 
-    const normalizedItemNameLower = normalizedItemName.toLowerCase();
-    const item = source.items.find(
-      candidateItem => (candidateItem.name ?? "").toLowerCase() === normalizedItemNameLower
+    const lowerName = normalizedItemName.toLowerCase();
+    const itemIndex = source.items.findIndex(
+      (i) => (i.name ?? "").toLowerCase() === lowerName,
     );
 
-    if (!item) {
-      const takeMessages = [`No "${normalizedItemName}" here.`];
-      messages?.push(...takeMessages);
-      return { item: null, messages: takeMessages };
+    if (itemIndex === -1) {
+      this.messages.addMessages(`No "${normalizedItemName}" here.`);
+      return null;
     }
 
-    source.items = source.items.filter(candidateItem => candidateItem.id !== item.id);
+    const item = source.items.splice(itemIndex, 1)[0];
     this.items.push(item);
 
-    const takeMessages = [`You take ${item.name ?? item}.`];
-    messages?.push(...takeMessages);
-    return { item, messages: takeMessages };
+    this.messages.addMessages(`You take ${item.name ?? item}.`);
+    return item;
   }
 
-  consume(itemName, messages) {
-    const normalizedItemName = (itemName ?? "").trim();
-    if (!normalizedItemName) {
-      const consumeMessages = ["Usage: consume <item name>"];
-      messages?.push(...consumeMessages);
-      return consumeMessages;
-    }
-
-    const normalizedItemNameLower = normalizedItemName.toLowerCase();
-    const item = this.items.find(
-      candidateItem => (candidateItem.name ?? "").toLowerCase() === normalizedItemNameLower
+  consume(itemName) {
+    const lowerName = (itemName ?? "").trim().toLowerCase();
+    const itemIndex = this.items.findIndex(
+      (i) => (i.name ?? "").toLowerCase() === lowerName,
     );
 
-    if (!item) {
-      const consumeMessages = [`You do not have "${normalizedItemName}".`];
-      messages?.push(...consumeMessages);
-      return consumeMessages;
+    if (itemIndex === -1) {
+      this.messages.addMessages(`You do not have "${itemName}".`);
+      return false;
     }
 
-    const healthGain = item.heals ?? 0;
-    const manaGain = item.restores ?? 0;
+    const item = this.items[itemIndex];
+    const hGain = item.heals ?? 0;
+    const mGain = item.restores ?? 0;
 
-    if (!healthGain && !manaGain) {
-      const consumeMessages = [`${item.name ?? "That item"} cannot be consumed.`];
-      messages?.push(...consumeMessages);
-      return consumeMessages;
+    if (!hGain && !mGain) {
+      this.messages.addMessages(`${item.name} cannot be consumed.`);
+      return false;
     }
 
-    if (healthGain) {
-      this.damage = Math.max(0, this.damage - healthGain);
+    if (hGain) this.applyHeal(hGain);
+    if (mGain) this.usedMana = Math.max(0, this.usedMana - mGain);
+
+    this.items.splice(itemIndex, 1);
+
+    this.messages.addMessages(
+      `You consume ${item.name} (+${hGain} HP, +${mGain} MP).`,
+    );
+    return true;
+  }
+
+  printCharacter() {
+    this.messages.addMessages(`--- ${this.name} ---`);
+    this.messages.addMessages(
+      `HP: ${this.currentHealth()} | MP: ${this.mana - this.usedMana}`,
+    );
+    if (this.equippedItem)
+      this.messages.addMessages(`Weapon: ${this.equippedItem.name}`);
+    if (this.items.length) {
+      this.messages.addMessages("Inventory:");
+      this.items.forEach((item) => {
+        let details = "";
+
+        switch (item.type) {
+          case "Weapon":
+            details = ` (Damage: ${item.damage})`;
+            break;
+          case "Armor":
+            const armorBonus = item.bonusHealth
+              ? ` +${item.bonusHealth} HP`
+              : "";
+            details = ` (${item.resilience} Res${armorBonus})`;
+            break;
+          case "Consumable":
+            if (item.heals) details = ` (Heals: ${item.heals} HP)`;
+            if (item.restores) details = ` (Restores: ${item.restores} MP)`;
+            break;
+          case "Trinket":
+            const tHP = item.bonusHealth ? `+${item.bonusHealth}HP ` : "";
+            const tMP = item.bonusMana ? `+${item.bonusMana}MP` : "";
+            details = ` (${(tHP + tMP).trim()})`;
+            break;
+          case "Scroll":
+          case "SpellBook":
+            details = ` [Teaches: ${item.teaches.name || "Unknown Spell"}]`;
+            break;
+        }
+
+        this.messages.addMessages(`- ${item.name}${details}`);
+      });
     }
+    if (this.spells.length) {
+      this.messages.addMessages("Spells:");
+      this.spells.forEach((spell) => {
+        const parts = [];
 
-    if (manaGain) {
-      this.usedMana = Math.max(0, this.usedMana - manaGain);
+        if (spell.damage > 0) {
+          const effectiveDmg = spell.damage + Math.floor(this.mana / 2);
+          parts.push(`${effectiveDmg} Dmg`);
+        }
+
+        if (spell.healsUser > 0) {
+          parts.push(`${spell.healsUser} Heal`);
+        }
+
+        const stats = parts.length > 0 ? ` (${parts.join(" / ")})` : "";
+        const cost = ` [${spell.manaCost ?? 0} MP]`;
+
+        this.messages.addMessages(`- ${spell.name}${stats}${cost}`);
+      });
     }
-
-    this.items = this.items.filter(inventoryItem => inventoryItem.id !== item.id);
-
-    const effects = [];
-    if (healthGain) effects.push(`+${healthGain} health`);
-    if (manaGain) effects.push(`+${manaGain} mana`);
-
-    const consumeMessages = [`You consume ${item.name ?? item} (${effects.join(", ")}).`];
-    messages?.push(...consumeMessages);
-    return consumeMessages;
+    return true;
   }
 }

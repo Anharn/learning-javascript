@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { MessageBus } from "./messages.js";
 
 export class Room {
   id;
@@ -24,25 +25,25 @@ export class Room {
     ]);
   }
 
-  addEnemy(enemy, messages) {
+  addEnemy(enemy) {
     this.enemies.push(enemy);
-    messages?.push(`${enemy?.name ?? enemy} added to the room.`);
+    MessageBus.addMessages(`${enemy?.name ?? enemy} has entered the room.`);
     return this;
   }
 
-  addItem(item, messages) {
+  addItem(item) {
     this.items.push(item);
-    messages?.push(`${item?.name ?? item} added to the room.`);
+    MessageBus.addMessages(`${item?.name ?? item} added to the room.`);
     return this;
   }
 
-  connect(direction, room, messages, overwrite = false) {
+  connect(direction, room, overwrite = false) {
     if (!this.connections.has(direction)) {
       throw new Error(`Unknown direction: ${direction}`);
     }
 
     if (!overwrite && this.getConnection(direction)) {
-      messages?.push(`A passage ${direction} already exists.`);
+      MessageBus.addMessages(`A passage ${direction} already exists.`);
       return this;
     }
 
@@ -65,7 +66,7 @@ export class Room {
       }
     }
 
-    messages?.push(`Connected ${this.id ?? "room"} ${direction} to ${room?.id ?? "room"}.`);
+    MessageBus.addMessages(`Connected ${this.id ?? "room"} ${direction} to ${room?.id ?? "room"}.`);
     return this;
   }
 
@@ -99,7 +100,7 @@ export class Room {
     if (this.enemies.length > 0) {
       messages.push("Enemies here:");
       for (const enemy of this.enemies) {
-        messages.push(`- ${enemy.name ?? enemy}`);
+        messages.push(`- ${enemy.name ?? enemy} (${enemy.dead ? "Dead" : enemy.health + " HP"})`);
       }
     }
 
@@ -115,29 +116,29 @@ export class Room {
     return messages;
   }
 
-  removeEnemy(enemy, messages) {
+  removeEnemy(enemy) {
     const enemyName = enemy?.name ?? enemy;
     const beforeCount = this.enemies.length;
     this.enemies = this.enemies.filter(candidate => candidate.id !== enemy.id);
 
     if (this.enemies.length !== beforeCount) {
-       messages?.push(`${enemyName} removed from the room.`);
+      MessageBus.addMessages(`${enemyName} removed from the room.`);
     } else {
-       messages?.push(`${enemyName} was not in the room.`);
+      MessageBus.addMessages(`${enemyName} was not in the room.`);
     }
 
     return this;
   }
 
-  removeItem(item, messages) {
+  removeItem(item) {
     const itemName = item?.name ?? item;
     const beforeCount = this.items.length;
     this.items = this.items.filter(candidate => candidate.id !== item.id);
 
     if (this.items.length !== beforeCount) {
-       messages?.push(`${itemName} removed from the room.`);
+      MessageBus.addMessages(`${itemName} removed from the room.`);
     } else {
-       messages?.push(`${itemName} was not in the room.`);
+      MessageBus.addMessages(`${itemName} was not in the room.`);
     }
 
     return this;

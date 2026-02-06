@@ -12,6 +12,10 @@ export class Item {
   bonusHealth;
   bonusMana;
   useMessages;
+  teachesSpell;
+  plusHit;
+  minusToBeHit;
+  plusDamage;
 
   constructor({ typeid, name, type, damage, resilience, bonusHealth, bonusMana, heals, restores, useMessages } = {}) {
     this.id = randomUUID();

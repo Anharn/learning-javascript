@@ -1,4 +1,4 @@
-export class Messages {
+class Messages {
   #messages = [];
 
   addMessages(...messages) {
@@ -17,3 +17,5 @@ export class Messages {
     this.#messages = [];
   }
 }
+
+export const MessageBus = new Messages();

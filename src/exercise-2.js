@@ -1,6 +1,4 @@
-import { Room } from "./game/room.js";
-import { Item } from "./game/item.js";
-import { Map } from "./game/map.js";
+import { Room, Item, Map } from "./game/index.js";
 
 /*
 ** Create a room.

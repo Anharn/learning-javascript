@@ -1,25 +1,43 @@
 import promptSync from "prompt-sync";
+import { MessageBus } from "./messages.js";
 
-export class CommandRegistry {
+export class GameLoop {
   commands;
   preCommandHooks = [];
   postCommandHooks = [];
   context;
+  messages = MessageBus;
 
   constructor(context) {
     this.commands = new Map();
     this.context = context;
   }
 
-  register(name, handler, aliases = []) {
+  register(name, handler, aliases = [], description = "") {
     const key = name.toLowerCase();
-    this.commands.set(key, { name: key, handler });
+    this.commands.set(key, { name: key, handler, aliases, description });
 
     for (const alias of aliases) {
       this.commands.set(alias.toLowerCase(), { name: key, handler });
     }
 
     return this;
+  }
+
+  getHelp() {
+    const lines = ["Commands:"];
+    const seen = new Set();
+
+    for (const [key, entry] of this.commands) {
+      if (seen.has(entry.name)) continue;
+      seen.add(entry.name);
+
+      const aliasText = entry.aliases.length > 0 ? ` (${entry.aliases.join(", ")})` : "";
+      const descText = entry.description ? ` - ${entry.description}` : "";
+      lines.push(`  ${entry.name}${aliasText}${descText}`);
+    }
+
+    return lines;
   }
 
   addPostCommandHook(hook) {
@@ -32,7 +50,8 @@ export class CommandRegistry {
     return this;
   }
 
-  start({ map, player }) {
+  start() {
+    const { map, player } = this.context;
     const prompt = promptSync({ sigint: true });
 
     const parseInput = (raw) => {
@@ -65,7 +84,7 @@ export class CommandRegistry {
       for (const hook of this.postCommandHooks) {
         hook(this.context, parsed.args, parsed.raw);
       }
-      this.context.messages.printMessagesAndClear();
+      this.messages.printMessagesAndClear();
     }
   }
 }

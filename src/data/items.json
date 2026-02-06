@@ -1,88 +1,286 @@
 [
-  { "typeid": "potion-health-minor", "name": "Minor Health Potion", "type": "Consumable", "heals": 5,
-    "useMessages": ["{user} drinks {item} and recovers {value} health."] },
-
-  { "typeid": "potion-health", "name": "Health Potion", "type": "Consumable", "heals": 15,
-    "useMessages": ["{user} drinks {item} and recovers {value} health."] },
-
-  { "typeid": "potion-health-major", "name": "Major Health Potion", "type": "Consumable", "heals": 30,
-    "useMessages": ["{user} drinks {item} and recovers {value} health."] },
-
-  { "typeid": "potion-mana-minor", "name": "Minor Mana Potion", "type": "Consumable", "restores": 5,
-    "useMessages": ["{user} drinks {item} and restores {value} mana."] },
-
-  { "typeid": "potion-mana", "name": "Mana Potion", "type": "Consumable", "restores": 15,
-    "useMessages": ["{user} drinks {item} and restores {value} mana."] },
-
-  { "typeid": "potion-mana-major", "name": "Major Mana Potion", "type": "Consumable", "restores": 30,
-    "useMessages": ["{user} drinks {item} and restores {value} mana."] },
-
-  { "typeid": "food-bread", "name": "Loaf of Bread", "type": "Consumable", "heals": 2,
-    "useMessages": ["{user} eats {item} and recovers {value} health."] },
-
-  { "typeid": "food-cheese", "name": "Cheese Wheel", "type": "Consumable", "heals": 4,
-    "useMessages": ["{user} eats {item} and recovers {value} health."] },
-
-  { "typeid": "food-apple", "name": "Shiny Apple", "type": "Consumable", "heals": 1,
-    "useMessages": ["{user} eats {item} and recovers {value} health."] },
-
-  { "typeid": "food-meat", "name": "Cooked Meat", "type": "Consumable", "heals": 6,
-    "useMessages": ["{user} eats {item} and recovers {value} health."] },
-
-  { "typeid": "weapon-dagger-rusty", "name": "Rusty Dagger", "type": "Weapon", "damage": 2, "resilience": 10,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "weapon-sword-iron", "name": "Iron Sword", "type": "Weapon", "damage": 4, "resilience": 25,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "weapon-sword-steel", "name": "Steel Sword", "type": "Weapon", "damage": 6, "resilience": 35,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "weapon-axe-battle", "name": "Battle Axe", "type": "Weapon", "damage": 8, "resilience": 30,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "weapon-mace-heavy", "name": "Heavy Mace", "type": "Weapon", "damage": 7, "resilience": 40,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "weapon-spear-long", "name": "Long Spear", "type": "Weapon", "damage": 5, "resilience": 30,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "weapon-bow-short", "name": "Short Bow", "type": "Weapon", "damage": 3, "resilience": 20,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "armor-shield-wooden", "name": "Wooden Shield", "type": "Armor", "bonusHealth": 10, "resilience": 15,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "armor-shield-steel", "name": "Steel Shield", "type": "Armor", "bonusHealth": 10, "resilience": 30,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "armor-helmet-leather", "name": "Leather Helmet", "type": "Armor", "bonusHealth": 10, "resilience": 10,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "armor-helmet-iron", "name": "Iron Helmet", "type": "Armor", "bonusHealth": 10, "resilience": 20,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "armor-chest-leather", "name": "Leather Armor", "type": "Armor", "bonusHealth": 10, "resilience": 25,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "armor-chest-chainmail", "name": "Chainmail Armor", "type": "Armor", "bonusHealth": 10, "resilience": 40,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "armor-boots-travel", "name": "Traveler's Boots", "type": "Armor", "resilience": 8,
-    "useMessages": ["{user} equips {item}."] },
-
-  { "typeid": "trinket-ring-health", "name": "Ring of Vitality", "type": "Trinket", "bonusHealth": 10,
-    "useMessages": ["{user} wears {item} and feels healthier."] },
-
-  { "typeid": "trinket-ring-mana", "name": "Ring of Focus", "type": "Trinket", "bonusMana": 10,
-    "useMessages": ["{user} wears {item} and feels more focused."] },
-
-  { "typeid": "trinket-amulet-protection", "name": "Amulet of Protection", "type": "Trinket", "resilience": 10,
-    "useMessages": ["{user} wears {item}. A faint aura surrounds them."] },
-
-  { "typeid": "trinket-charm-luck", "name": "Lucky Charm", "type": "Trinket", "bonusHealth": 5, "bonusMana": 5,
-    "useMessages": ["{user} carries {item}. Fortune seems closer."] },
-
-  { "typeid": "utility-torch", "name": "Torch", "type": "Utility",
-    "useMessages": ["{user} lights {item}. Shadows retreat slightly."] }
+    {
+        "typeid": "potion-health-minor",
+        "name": "Minor Health Potion",
+        "type": "Consumable",
+        "heals": 5,
+        "useMessages": [
+            "{user} drinks {item} and recovers {value} health."
+        ]
+    },
+    {
+        "typeid": "potion-health",
+        "name": "Health Potion",
+        "type": "Consumable",
+        "heals": 15,
+        "useMessages": [
+            "{user} drinks {item} and recovers {value} health."
+        ]
+    },
+    {
+        "typeid": "potion-health-major",
+        "name": "Major Health Potion",
+        "type": "Consumable",
+        "heals": 30,
+        "useMessages": [
+            "{user} drinks {item} and recovers {value} health."
+        ]
+    },
+    {
+        "typeid": "potion-mana-minor",
+        "name": "Minor Mana Potion",
+        "type": "Consumable",
+        "restores": 5,
+        "useMessages": [
+            "{user} drinks {item} and restores {value} mana."
+        ]
+    },
+    {
+        "typeid": "potion-mana",
+        "name": "Mana Potion",
+        "type": "Consumable",
+        "restores": 15,
+        "useMessages": [
+            "{user} drinks {item} and restores {value} mana."
+        ]
+    },
+    {
+        "typeid": "potion-mana-major",
+        "name": "Major Mana Potion",
+        "type": "Consumable",
+        "restores": 30,
+        "useMessages": [
+            "{user} drinks {item} and restores {value} mana."
+        ]
+    },
+    {
+        "typeid": "food-bread",
+        "name": "Loaf of Bread",
+        "type": "Consumable",
+        "heals": 2,
+        "useMessages": [
+            "{user} eats {item} and recovers {value} health."
+        ]
+    },
+    {
+        "typeid": "food-cheese",
+        "name": "Cheese Wheel",
+        "type": "Consumable",
+        "heals": 4,
+        "useMessages": [
+            "{user} eats {item} and recovers {value} health."
+        ]
+    },
+    {
+        "typeid": "food-apple",
+        "name": "Shiny Apple",
+        "type": "Consumable",
+        "heals": 1,
+        "useMessages": [
+            "{user} eats {item} and recovers {value} health."
+        ]
+    },
+    {
+        "typeid": "food-meat",
+        "name": "Cooked Meat",
+        "type": "Consumable",
+        "heals": 6,
+        "useMessages": [
+            "{user} eats {item} and recovers {value} health."
+        ]
+    },
+    {
+        "typeid": "weapon-dagger-rusty",
+        "name": "Rusty Dagger",
+        "type": "Weapon",
+        "damage": 3,
+        "resilience": 10,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "weapon-big-stick",
+        "name": "Big Stick",
+        "type": "Weapon",
+        "damage": 3,
+        "resilience": 5,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "weapon-sword-iron",
+        "name": "Iron Sword",
+        "type": "Weapon",
+        "damage": 6,
+        "resilience": 25,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "weapon-sword-steel",
+        "name": "Steel Sword",
+        "type": "Weapon",
+        "damage": 6,
+        "resilience": 35,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "weapon-axe-battle",
+        "name": "Battle Axe",
+        "type": "Weapon",
+        "damage": 8,
+        "resilience": 30,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "weapon-mace-heavy",
+        "name": "Heavy Mace",
+        "type": "Weapon",
+        "damage": 7,
+        "resilience": 40,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "weapon-spear-long",
+        "name": "Long Spear",
+        "type": "Weapon",
+        "damage": 6,
+        "resilience": 30,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "weapon-bow-short",
+        "name": "Short Bow",
+        "type": "Weapon",
+        "damage": 6,
+        "resilience": 20,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "armor-shield-wooden",
+        "name": "Wooden Shield",
+        "type": "Armor",
+        "bonusHealth": 10,
+        "resilience": 15,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "armor-shield-steel",
+        "name": "Steel Shield",
+        "type": "Armor",
+        "bonusHealth": 10,
+        "resilience": 30,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "armor-helmet-leather",
+        "name": "Leather Helmet",
+        "type": "Armor",
+        "bonusHealth": 10,
+        "resilience": 10,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "armor-helmet-iron",
+        "name": "Iron Helmet",
+        "type": "Armor",
+        "bonusHealth": 10,
+        "resilience": 20,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "armor-chest-leather",
+        "name": "Leather Armor",
+        "type": "Armor",
+        "bonusHealth": 10,
+        "resilience": 25,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "armor-chest-chainmail",
+        "name": "Chainmail Armor",
+        "type": "Armor",
+        "bonusHealth": 10,
+        "resilience": 40,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "armor-boots-travel",
+        "name": "Traveler's Boots",
+        "type": "Armor",
+        "resilience": 8,
+        "useMessages": [
+            "{user} equips {item}."
+        ]
+    },
+    {
+        "typeid": "trinket-ring-health",
+        "name": "Ring of Vitality",
+        "type": "Trinket",
+        "bonusHealth": 10,
+        "useMessages": [
+            "{user} wears {item} and feels healthier."
+        ]
+    },
+    {
+        "typeid": "trinket-ring-mana",
+        "name": "Ring of Focus",
+        "type": "Trinket",
+        "bonusMana": 10,
+        "useMessages": [
+            "{user} wears {item} and feels more focused."
+        ]
+    },
+    {
+        "typeid": "trinket-amulet-protection",
+        "name": "Amulet of Protection",
+        "type": "Trinket",
+        "resilience": 10,
+        "useMessages": [
+            "{user} wears {item}. A faint aura surrounds them."
+        ]
+    },
+    {
+        "typeid": "trinket-charm-luck",
+        "name": "Lucky Charm",
+        "type": "Trinket",
+        "bonusHealth": 5,
+        "bonusMana": 5,
+        "useMessages": [
+            "{user} carries {item}. Fortune seems closer."
+        ]
+    },
+    {
+        "typeid": "utility-torch",
+        "name": "Torch",
+        "type": "Utility",
+        "useMessages": [
+            "{user} lights {item}. Shadows retreat slightly."
+        ]
+    }
 ]
