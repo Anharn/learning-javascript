@@ -13,6 +13,7 @@ import {
   handleDrop,
   handleTake,
   handleRest,
+  handleRename,
   handleSearch,
   handleMove,
   Spell
@@ -63,7 +64,8 @@ registry
   .register("south", () => handleMove("south"), ["s"], "Go South")
   .register("east", () => handleMove("east"), ["e"], "Go East")
   .register("west", () => handleMove("west"), ["w"], "Go West")
-  .register("reset", () => reset(), [], "Reset game");
+  .register("reset", () => reset(), [], "Reset game")
+  .register("rename", (_, args) => handleRename(args), [], "Rename yourself: rename <new name>");
 
 // --- Start Game ---
 

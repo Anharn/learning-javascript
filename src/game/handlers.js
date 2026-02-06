@@ -199,3 +199,16 @@ export function handleDrop(args) {
     context.takeEnemyTurns = true;
     return true;
 }
+
+export function handleRename(args) {
+    const newName = args.join(" ").trim();
+    if (!newName) {
+      MessageBus.addMessages("Usage: rename <new name>");
+      return true;
+    }
+
+    context.player.name = newName;
+    MessageBus.addMessages(`You are now known as ${newName}.`);
+    context.takeEnemyTurns = true;
+    return true;
+}
