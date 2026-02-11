@@ -260,7 +260,7 @@
         "typeid": "trinket-amulet-protection",
         "name": "Amulet of Protection",
         "type": "Trinket",
-        "resilience": 10,
+        "bonusHealth": 10,
         "useMessages": [
             "{user} wears {item}. A faint aura surrounds them."
         ]

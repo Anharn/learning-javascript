@@ -8,6 +8,7 @@ export class Room {
   enemies;
   items;
   connections;
+  visited = false;
 
   constructor(description, typeid = null) {
     this.id = randomUUID();

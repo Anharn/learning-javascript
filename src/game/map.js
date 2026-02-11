@@ -1,9 +1,5 @@
-import { Room, Character, Item, context, d10 } from "./index.js";
-import { MessageBus } from "./messages.js";
-
+import { Room, context, d10, MessageBus, populateRooms } from "./index.js";
 import roomTemplates from "../data/rooms.json" with { type: "json" };
-import enemyTemplates from "../data/enemies.json" with { type: "json" };
-import itemTemplates from "../data/items.json" with { type: "json" };
 
 export class GameMap {
   rooms;
@@ -11,20 +7,18 @@ export class GameMap {
 
   constructor() {
     this.rooms = this.buildRooms(roomTemplates);
-    this.connectRoomsRandomly(this.rooms);
-    this.populateRooms(this.rooms, enemyTemplates, itemTemplates);
-    this.currentRoom = this.pickRandom(this.rooms);
+    this.currentRoom = this.rooms.get("0,0,0");
+    this.currentRoom.visited = true;
   }
 
   buildRooms(roomTemplates) {
-    return roomTemplates.map(
-      (template) => new Room(template.description, template.typeid),
-    );
+    const rooms = roomTemplates.map((t) => new Room(t.description, t.typeid));
+    this.shuffleInPlace(rooms);
+    return this.connectRooms(populateRooms(rooms));
   }
 
-  connectRoomsRandomly(rooms) {
-    const DIRECTIONS = ['north', 'south', 'east', 'west', 'up', 'down'];
-
+  connectRooms(shuffledRooms) {
+    const DIRECTIONS = ["north", "south", "east", "west", "up", "down"];
     const DELTAS = {
       north: { x: 0, y: 1, z: 0 },
       south: { x: 0, y: -1, z: 0 },
@@ -33,167 +27,59 @@ export class GameMap {
       up: { x: 0, y: 0, z: 1 },
       down: { x: 0, y: 0, z: -1 },
     };
-
     const OPPOSITE = {
-      north: 'south',
-      south: 'north',
-      east: 'west',
-      west: 'east',
-      up: 'down',
-      down: 'up',
+      north: "south",
+      south: "north",
+      east: "west",
+      west: "east",
+      up: "down",
+      down: "up",
     };
 
-    if (!rooms?.length) return;
+    const roomMap = new Map();
+    const coords = new Map();
+    const getKey = (p) => `${p.x},${p.y},${p.z}`;
 
-    const shuffledRooms = [...rooms];
-    this.shuffleInPlace(shuffledRooms);
+    const first = shuffledRooms.shift();
+    const origin = { x: 0, y: 0, z: 0 };
+    roomMap.set(getKey(origin), first);
+    coords.set(first, origin);
 
-    const coordinateKey = (x, y, z) => `${x},${y},${z}`;
+    const queue = [first];
 
-    const roomByCoordinate = new Map(); // "x,y,z" -> room
-    const coordinateByRoom = new Map(); // room -> {x,y,z}
+    while (queue.length > 0 && shuffledRooms.length > 0) {
+      const current = queue.shift();
+      const pos = coords.get(current);
+      const randomDirs = [...DIRECTIONS];
+      this.shuffleInPlace(randomDirs);
 
-    const connectPair = (fromRoom, directionFromFromRoom, toRoom) => {
-      if (fromRoom.getConnection(directionFromFromRoom) !== null) return false;
+      for (const dir of randomDirs) {
+        if (shuffledRooms.length === 0) break;
+        if (current.getConnection(dir)) continue;
 
-      const directionFromToRoom = OPPOSITE[directionFromFromRoom];
-      if (toRoom.getConnection(directionFromToRoom) !== null) return false;
+        const delta = DELTAS[dir];
+        const nextPos = {
+          x: pos.x + delta.x,
+          y: pos.y + delta.y,
+          z: pos.z + delta.z,
+        };
+        const key = getKey(nextPos);
 
-      fromRoom.connect(directionFromFromRoom, toRoom);
-      toRoom.connect(directionFromToRoom, fromRoom);
-      return true;
-    };
-
-    const placeRoomAt = (room, x, y, z) => {
-      roomByCoordinate.set(coordinateKey(x, y, z), room);
-      coordinateByRoom.set(room, { x, y, z });
-    };
-
-    const neighborCoordinateOf = (x, y, z, direction) => {
-      const delta = DELTAS[direction];
-      return { x: x + delta.x, y: y + delta.y, z: z + delta.z };
-    };
-
-    const firstRoom = shuffledRooms[0];
-    placeRoomAt(firstRoom, 0, 0, 0);
-
-    const unplacedRooms = shuffledRooms.slice(1);
-    const frontierQueue = [firstRoom];
-
-    while (frontierQueue.length && unplacedRooms.length) {
-      const currentRoom = frontierQueue.shift();
-      const currentCoordinate = coordinateByRoom.get(currentRoom);
-      if (!currentCoordinate) continue;
-
-      const directionsInRandomOrder = [...DIRECTIONS];
-      this.shuffleInPlace(directionsInRandomOrder);
-
-      for (const direction of directionsInRandomOrder) {
-        if (!unplacedRooms.length) break;
-
-        if (currentRoom.getConnection(direction) !== null) continue;
-
-        const neighborCoordinate = neighborCoordinateOf(
-          currentCoordinate.x,
-          currentCoordinate.y,
-          currentCoordinate.z,
-          direction,
-        );
-
-        const neighborKey = coordinateKey(
-          neighborCoordinate.x,
-          neighborCoordinate.y,
-          neighborCoordinate.z,
-        );
-
-        const existingNeighborRoom = roomByCoordinate.get(neighborKey);
-
-        if (existingNeighborRoom) {
-          connectPair(currentRoom, direction, existingNeighborRoom);
-          continue;
+        let neighbor = roomMap.get(key);
+        if (!neighbor) {
+          neighbor = shuffledRooms.shift();
+          roomMap.set(key, neighbor);
+          coords.set(neighbor, nextPos);
+          queue.push(neighbor);
         }
 
-        const nextRoomToPlace = unplacedRooms.shift();
-        placeRoomAt(
-          nextRoomToPlace,
-          neighborCoordinate.x,
-          neighborCoordinate.y,
-          neighborCoordinate.z,
-        );
-
-        connectPair(currentRoom, direction, nextRoomToPlace);
-        frontierQueue.push(nextRoomToPlace);
-      }
-    }
-  }
-
-  createItem(itemTemplate) {
-    return new Item(itemTemplate);
-  }
-
-  createRandomItem() {
-    return this.createItem(this.pickRandom(itemTemplates));
-  }
-
-  populateRooms(rooms, enemyTemplates, itemTemplates) {
-    for (const room of rooms) {
-      const enemyRoll = Math.random();
-
-      if (enemyRoll < 0.5) {
-        if (Math.random() < 0.1) {
-          room.addItem(this.createRandomItem());
+        if (!neighbor.getConnection(OPPOSITE[dir])) {
+          current.connect(dir, neighbor);
+          neighbor.connect(OPPOSITE[dir], current);
         }
-        continue;
-      }
-
-      const roll = this.randomIntInclusive(1, 10);
-      const enemyCount = roll <= 6 ? 1 : roll <= 9 ? 2 : 3;
-
-      for (let i = 0; i < enemyCount; i++) {
-        const enemy = this.createEnemy(enemyTemplates, itemTemplates);
-        room.addEnemy(enemy);
       }
     }
-  }
-
-  createEnemy(enemyTemplates = enemyTemplates, itemTemplates = itemTemplates) {
-    const template = this.pickRandom(enemyTemplates);
-
-    const enemy = new Character(template.name, template.health, template.mana, {
-      typeid: template.typeid,
-    });
-
-    if (template.equippedItemTemplate) {
-      enemy.equipItem(new Item(template.equippedItemTemplate));
-    } else {
-      const weaponData = this.pickRandomWeapon(itemTemplates);
-      if (weaponData) {
-        const weapon = new Item(weaponData);
-        enemy.acquireItem(weapon);
-        enemy.equipItem(weapon);
-      }
-    }
-
-    const maxLoot = Math.ceil(enemy.health / 10);
-    const lootCount = this.randomIntInclusive(0, maxLoot);
-
-    for (let i = 0; i < lootCount; i++) {
-      const item = new Item(this.pickRandom(itemTemplates));
-      enemy.acquireItem(item);
-
-      if (
-        item.type === "Weapon" &&
-        (!enemy.equippedItem || enemy.equippedItem.type === "Natural")
-      ) {
-        enemy.equipItem(item);
-      }
-    }
-
-    if (Array.isArray(template.spellTypeids)) {
-      enemy.spellTypeids = [...template.spellTypeids];
-    }
-
-    return enemy;
+    return roomMap;
   }
 
   look() {
@@ -206,6 +92,7 @@ export class GameMap {
     const nextRoom = this.currentRoom.getConnection(direction);
     if (!nextRoom) return false;
     this.currentRoom = nextRoom;
+    this.currentRoom.visited = true;
     return true;
   }
 
@@ -214,21 +101,18 @@ export class GameMap {
     context.activatedEnemies = context.activatedEnemies.filter(
       (a) => a.room !== fromRoom,
     );
+
     const movedEnemyNames = [];
     const remainingEnemies = [];
-    const enemiesToMove = [...fromRoom.enemies].filter(
-      (enemy) => !enemy.isDead(),
-    );
 
-    for (const enemy of enemiesToMove) {
-      const roll = d10();
-      if (roll <= 7) {
+    fromRoom.enemies.forEach((enemy) => {
+      if (!enemy.isDead() && d10() <= 7) {
         toRoom.addEnemy(enemy);
-        movedEnemyNames.push(enemy.name ?? String(enemy));
+        movedEnemyNames.push(enemy.name);
       } else {
         remainingEnemies.push(enemy);
       }
-    }
+    });
 
     fromRoom.enemies = remainingEnemies;
     return movedEnemyNames;
@@ -241,25 +125,13 @@ export class GameMap {
   }
 
   getAvailableDirections() {
-    const directions = [];
-    this.currentRoom.connections.forEach((nextRoom, direction) => {
-      if (nextRoom) directions.push(direction);
-    });
-    return directions;
+    return Array.from(this.currentRoom.connections.keys()).filter((dir) =>
+      this.currentRoom.getConnection(dir),
+    );
   }
 
   getCurrentRoom() {
     return this.currentRoom;
-  }
-
-  pickRandom(list = itemTemplates) {
-    return list[this.randomIntInclusive(0, list.length - 1)];
-  }
-
-  pickRandomWeapon(list = itemTemplates) {
-    const filtered = list.filter((item) => item.type === "Weapon");
-    if (filtered.length === 0) return null;
-    return filtered[this.randomIntInclusive(0, filtered.length - 1)];
   }
 
   randomIntInclusive(min, max) {
@@ -269,9 +141,80 @@ export class GameMap {
   shuffleInPlace(list) {
     for (let index = list.length - 1; index > 0; index--) {
       const swapIndex = this.randomIntInclusive(0, index);
-      const temp = list[index];
-      list[index] = list[swapIndex];
-      list[swapIndex] = temp;
+      [list[index], list[swapIndex]] = [list[swapIndex], list[index]];
     }
+  }
+
+  printMap() {
+    let playerPos = { x: 0, y: 0, z: 0 };
+    for (const [key, room] of this.rooms.entries()) {
+      if (room === this.currentRoom) {
+        const [x, y, z] = key.split(",").map(Number);
+        playerPos = { x, y, z };
+        break;
+      }
+    }
+
+    let minX = playerPos.x,
+      maxX = playerPos.x,
+      minY = playerPos.y,
+      maxY = playerPos.y;
+    for (const [key, room] of this.rooms.entries()) {
+      const [x, y, z] = key.split(",").map(Number);
+      if (z === playerPos.z && room.visited) {
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      }
+    }
+
+    const mapOutput = [`--- Level ${playerPos.z} ---`];
+
+    for (let y = maxY; y >= minY; y--) {
+      let topRow = "",
+        midRow = "",
+        botRow = "";
+
+      for (let x = minX; x <= maxX; x++) {
+        const room = this.rooms.get(`${x},${y},${playerPos.z}`);
+        if (!room || !room.visited) {
+          topRow += "   ";
+          midRow += "   ";
+          botRow += "   ";
+          continue;
+        }
+
+        const hasN = !!room.getConnection("north");
+        const hasS = !!room.getConnection("south");
+        const hasE = !!room.getConnection("east");
+        const hasW = !!room.getConnection("west");
+        const hasUp = !!room.getConnection("up");
+        const hasDown = !!room.getConnection("down");
+        const hasEnemies = room.enemies?.some((e) => !e.isDead());
+        const isPlayer = x === playerPos.x && y === playerPos.y;
+
+        topRow += `┌${hasN ? " " : "─"}┐`;
+
+        let centerChar = " ";
+        if (isPlayer) {
+          centerChar = "◎";
+        } else if (hasEnemies) {
+          centerChar = "E";
+        } else if (hasUp && hasDown) {
+          centerChar = "⇵";
+        } else if (hasUp) {
+          centerChar = "↑";
+        } else if (hasDown) {
+          centerChar = "↓";
+        }
+
+        midRow += `${hasW ? " " : "│"}${centerChar}${hasE ? " " : "│"}`;
+        botRow += `└${hasS ? " " : "─"}┘`;
+      }
+      mapOutput.push(topRow, midRow, botRow);
+    }
+
+    MessageBus.addMessages(...mapOutput);
   }
 }

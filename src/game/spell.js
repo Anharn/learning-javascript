@@ -5,16 +5,27 @@ export class Spell {
   typeid;
   name;
   school;
+  effect;
   manaCost;
   damage;
   healsUser;
   castMessages;
 
-  constructor({ typeid, name, school, manaCost, damage, healsUser, castMessages } = {}) {
+  constructor({
+    typeid,
+    name,
+    school,
+    effect,
+    manaCost,
+    damage,
+    healsUser,
+    castMessages,
+  } = {}) {
     this.id = randomUUID();
     this.typeid = typeid;
     this.name = name;
     this.school = school;
+    this.effect = effect;
     this.manaCost = manaCost;
     this.damage = damage;
     this.healsUser = healsUser;

@@ -46,8 +46,6 @@ describe("Action Class", () => {
     });
 
     it("should apply variable damage on a standard HIT", () => {
-      // Force middle of the road roll (e.g., 10) and 1.0 variance
-      // This is tricky with one Math.random spy, so we mock specific returns sequentially
       const randomSpy = vi.spyOn(Math, "random")
         .mockReturnValueOnce(0.5) // Roll logic
         .mockReturnValueOnce(0.5); // Variance logic: 0.8 + (0.5 * 0.4) = 1.0

@@ -7,6 +7,7 @@ class Messages {
   }
 
   printMessagesAndClear() {
+    console.log();
     for (const message of this.#messages) {
         console.log(message);
     }

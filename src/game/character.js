@@ -168,7 +168,7 @@ export class Character {
     }
 
     const item = source.items.splice(itemIndex, 1)[0];
-    this.items.push(item);
+    this.acquireItem(item)
 
     this.messages.addMessages(`You take ${item.name ?? item}.`);
     return item;

@@ -1,4 +1,4 @@
-import { Action, d10, MessageBus } from "./index.js";
+import { Action, createEnemy, d10, MessageBus } from "./index.js";
 import enemyTemplates from "../data/enemies.json" with { type: "json" };
 import itemTemplates from "../data/items.json" with { type: "json" };
 
@@ -32,18 +32,56 @@ export function enemyLoop() {
   const currentRoom = context.map.getCurrentRoom();
 
   if (!context.takeEnemyTurns) return;
+
   context.activatedEnemies = context.activatedEnemies.filter(
     (actor) => !actor.enemy.isDead(),
   );
 
   for (const actor of context.activatedEnemies) {
+    const enemy = actor.enemy;
+
     if (actor.room.id !== currentRoom.id) {
       context.map.moveEnemies(actor.room, currentRoom);
       actor.room = currentRoom;
       continue;
     }
 
-    Action.attack(actor.enemy, context.player);
+    const currentMana = enemy.mana - enemy.usedMana;
+    const isDamaged = enemy.health < enemy.maxHealth;
+
+    const consumable = enemy.items.find((item) => item.type === "Consumable");
+    if (consumable && Math.random() < 0.15) {
+      const needsHealing = isDamaged && consumable.heals > 0;
+      const needsMana =
+        currentMana < enemy.mana * 0.5 && consumable.restores > 0;
+
+      if (needsHealing || needsMana) {
+        Action.useItem(enemy, consumable.name);
+        continue;
+      }
+    }
+
+    if (isDamaged && enemy.spells?.length > 0 && Math.random() < 0.25) {
+      const healSpell = enemy.spells.find(
+        (spell) => spell.healsUser > 0 && (spell.manaCost ?? 0) <= currentMana,
+      );
+      if (healSpell) {
+        Action.cast(healSpell, enemy, enemy);
+        continue;
+      }
+    }
+
+    if (enemy.spells?.length > 0 && Math.random() < 0.2) {
+      const damageSpell = enemy.spells.find(
+        (spell) => spell.damage > 0 && (spell.manaCost ?? 0) <= currentMana,
+      );
+      if (damageSpell) {
+        Action.cast(damageSpell, enemy, context.player, currentRoom.enemies);
+        continue;
+      }
+    }
+
+    Action.attack(enemy, context.player);
   }
 }
 
@@ -166,7 +204,7 @@ export function handleRest() {
   if (encounterChance <= 2) {
     MessageBus.addMessages("While resting, you are ambushed by an enemy!");
     const room = context.map.getCurrentRoom();
-    const enemy = context.map.createEnemy(
+    const enemy = createEnemy(
       enemyTemplates.slice(0, 10),
       itemTemplates,
     );

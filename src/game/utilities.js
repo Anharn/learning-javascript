@@ -1,11 +1,10 @@
 export function rollDice(times = 1, sides = 10) {
-  return Math.floor(Math.random() * sides) + 1;
+  let total = 0;
+  for (let i = 0; i < times; i++) {
+    total += Math.floor(Math.random() * sides) + 1;
+  }
+  return total;
 }
 
-export function d10(times = 1) {
-  return rollDice(1, 10);
-}
-
-export function d100(times = 1) {
-  return rollDice(1, 100);
-}
+export const d10 = (times = 1) => rollDice(times, 10);
+export const d100 = (times = 1) => rollDice(times, 100);
