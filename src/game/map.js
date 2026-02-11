@@ -23,144 +23,107 @@ export class GameMap {
   }
 
   connectRoomsRandomly(rooms) {
-    const DIRECTIONS = ["north", "south", "east", "west"];
+    const DIRECTIONS = ['north', 'south', 'east', 'west', 'up', 'down'];
+
     const DELTAS = {
-      north: { x: 0, y: -1 },
-      south: { x: 0, y: 1 },
-      west: { x: -1, y: 0 },
-      east: { x: 1, y: 0 },
+      north: { x: 0, y: 1, z: 0 },
+      south: { x: 0, y: -1, z: 0 },
+      east: { x: 1, y: 0, z: 0 },
+      west: { x: -1, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+      down: { x: 0, y: 0, z: -1 },
     };
+
     const OPPOSITE = {
-      north: "south",
-      south: "north",
-      west: "east",
-      east: "west",
+      north: 'south',
+      south: 'north',
+      east: 'west',
+      west: 'east',
+      up: 'down',
+      down: 'up',
     };
 
     if (!rooms?.length) return;
 
-    const n = rooms.length;
-    const width = Math.ceil(Math.sqrt(n));
-    const height = Math.ceil(n / width);
+    const shuffledRooms = [...rooms];
+    this.shuffleInPlace(shuffledRooms);
 
-    const shuffled = [...rooms];
-    this.shuffleInPlace(shuffled);
+    const coordinateKey = (x, y, z) => `${x},${y},${z}`;
 
-    const cells = new Map(); // "x,y" -> room
-    const posByRoom = new Map(); // room -> {x,y}
+    const roomByCoordinate = new Map(); // "x,y,z" -> room
+    const coordinateByRoom = new Map(); // room -> {x,y,z}
 
-    const keyOf = (x, y) => `${x},${y}`;
+    const connectPair = (fromRoom, directionFromFromRoom, toRoom) => {
+      if (fromRoom.getConnection(directionFromFromRoom) !== null) return false;
 
-    const inBounds = (x, y) => x >= 0 && y >= 0 && x < width && y < height;
+      const directionFromToRoom = OPPOSITE[directionFromFromRoom];
+      if (toRoom.getConnection(directionFromToRoom) !== null) return false;
 
-    const openNeighbors = (x, y) => {
-      const list = [];
-      for (const dir of DIRECTIONS) {
-        const d = DELTAS[dir];
-        const nx = x + d.x;
-        const ny = y + d.y;
-        if (!inBounds(nx, ny)) continue;
-        if (!cells.has(keyOf(nx, ny))) list.push({ dir, x: nx, y: ny });
-      }
-      return list;
-    };
-
-    const occupiedNeighbors = (x, y) => {
-      const list = [];
-      for (const dir of DIRECTIONS) {
-        const d = DELTAS[dir];
-        const nx = x + d.x;
-        const ny = y + d.y;
-        if (!inBounds(nx, ny)) continue;
-        const room = cells.get(keyOf(nx, ny));
-        if (room) list.push({ dir, room, x: nx, y: ny });
-      }
-      return list;
-    };
-
-    const connectPair = (a, dirFromA, b) => {
-      if (a.getConnection(dirFromA) !== null) return false;
-      const dirFromB = OPPOSITE[dirFromA];
-      if (b.getConnection(dirFromB) !== null) return false;
-
-      a.connect(dirFromA, b);
-      b.connect(dirFromB, a);
+      fromRoom.connect(directionFromFromRoom, toRoom);
+      toRoom.connect(directionFromToRoom, fromRoom);
       return true;
     };
 
-    const placeRoom = (room, x, y) => {
-      const k = keyOf(x, y);
-      cells.set(k, room);
-      posByRoom.set(room, { x, y });
+    const placeRoomAt = (room, x, y, z) => {
+      roomByCoordinate.set(coordinateKey(x, y, z), room);
+      coordinateByRoom.set(room, { x, y, z });
     };
 
-    // Place first room at center-ish
-    placeRoom(shuffled[0], Math.floor(width / 2), Math.floor(height / 2));
+    const neighborCoordinateOf = (x, y, z, direction) => {
+      const delta = DELTAS[direction];
+      return { x: x + delta.x, y: y + delta.y, z: z + delta.z };
+    };
 
-    // Grow a connected layout by placing each new room into an empty adjacent cell
-    for (let i = 1; i < shuffled.length; i++) {
-      const room = shuffled[i];
+    const firstRoom = shuffledRooms[0];
+    placeRoomAt(firstRoom, 0, 0, 0);
 
-      const occupiedKeys = [...cells.keys()];
-      this.shuffleInPlace(occupiedKeys);
+    const unplacedRooms = shuffledRooms.slice(1);
+    const frontierQueue = [firstRoom];
 
-      let placed = false;
+    while (frontierQueue.length && unplacedRooms.length) {
+      const currentRoom = frontierQueue.shift();
+      const currentCoordinate = coordinateByRoom.get(currentRoom);
+      if (!currentCoordinate) continue;
 
-      for (const k of occupiedKeys) {
-        const [xStr, yStr] = k.split(",");
-        const x = Number(xStr);
-        const y = Number(yStr);
+      const directionsInRandomOrder = [...DIRECTIONS];
+      this.shuffleInPlace(directionsInRandomOrder);
 
-        const candidates = openNeighbors(x, y);
-        if (!candidates.length) continue;
+      for (const direction of directionsInRandomOrder) {
+        if (!unplacedRooms.length) break;
 
-        const pick = this.pickRandom(candidates);
-        placeRoom(room, pick.x, pick.y);
+        if (currentRoom.getConnection(direction) !== null) continue;
 
-        const fromRoom = cells.get(k);
-        connectPair(fromRoom, pick.dir, room);
+        const neighborCoordinate = neighborCoordinateOf(
+          currentCoordinate.x,
+          currentCoordinate.y,
+          currentCoordinate.z,
+          direction,
+        );
 
-        placed = true;
-        break;
-      }
+        const neighborKey = coordinateKey(
+          neighborCoordinate.x,
+          neighborCoordinate.y,
+          neighborCoordinate.z,
+        );
 
-      if (!placed) {
-        for (let y = 0; y < height && !placed; y++) {
-          for (let x = 0; x < width && !placed; x++) {
-            const k2 = keyOf(x, y);
-            if (!cells.has(k2)) {
-              placeRoom(room, x, y);
+        const existingNeighborRoom = roomByCoordinate.get(neighborKey);
 
-              const neighbors = occupiedNeighbors(x, y).filter(
-                (nbr) => nbr.room.getConnection(OPPOSITE[nbr.dir]) === null,
-              );
-              if (neighbors.length) {
-                const nbr = this.pickRandom(neighbors);
-                connectPair(room, nbr.dir, nbr.room);
-              }
-
-              placed = true;
-            }
-          }
+        if (existingNeighborRoom) {
+          connectPair(currentRoom, direction, existingNeighborRoom);
+          continue;
         }
+
+        const nextRoomToPlace = unplacedRooms.shift();
+        placeRoomAt(
+          nextRoomToPlace,
+          neighborCoordinate.x,
+          neighborCoordinate.y,
+          neighborCoordinate.z,
+        );
+
+        connectPair(currentRoom, direction, nextRoomToPlace);
+        frontierQueue.push(nextRoomToPlace);
       }
-    }
-
-    // Add some extra connections, but ONLY between adjacent occupied cells
-    const extraConnections = Math.max(0, Math.floor(n / 2));
-    const attempts = extraConnections * 8;
-
-    for (let i = 0, made = 0; i < attempts && made < extraConnections; i++) {
-      const fromRoom = this.pickRandom(rooms);
-      const pos = posByRoom.get(fromRoom);
-      if (!pos) continue;
-
-      const adjacent = occupiedNeighbors(pos.x, pos.y);
-      if (!adjacent.length) continue;
-
-      const pick = this.pickRandom(adjacent);
-
-      if (connectPair(fromRoom, pick.dir, pick.room)) made++;
     }
   }
 
