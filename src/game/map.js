@@ -45,17 +45,37 @@ export class GameMap {
     roomMap.set(getKey(origin), first);
     coords.set(first, origin);
 
-    const queue = [first];
+    const activeRooms = [first];
 
-    while (queue.length > 0 && shuffledRooms.length > 0) {
-      const current = queue.shift();
+    while (activeRooms.length > 0 && shuffledRooms.length > 0) {
+      this.shuffleInPlace(activeRooms);
+      const current = activeRooms.shift();
       const pos = coords.get(current);
+
       const randomDirs = [...DIRECTIONS];
       this.shuffleInPlace(randomDirs);
 
+      const roll = Math.random();
+      let targetConnections;
+
+      if (roll < 0.1)
+        targetConnections = 1; // Dead ends / Hallways
+      else if (roll < 0.6)
+        targetConnections = 2; // Standard passages
+      else if (roll < 0.9)
+        targetConnections = 3; // Intersections
+      else targetConnections = 4; // Hubs (Rarely 5 or 6)
+
+      let connectionsMade = 0;
+
       for (const dir of randomDirs) {
-        if (shuffledRooms.length === 0) break;
-        if (current.getConnection(dir)) continue;
+        if (shuffledRooms.length === 0 || connectionsMade >= targetConnections)
+          break;
+
+        if (current.getConnection(dir)) {
+          connectionsMade++;
+          continue;
+        }
 
         const delta = DELTAS[dir];
         const nextPos = {
@@ -66,17 +86,23 @@ export class GameMap {
         const key = getKey(nextPos);
 
         let neighbor = roomMap.get(key);
+
         if (!neighbor) {
           neighbor = shuffledRooms.shift();
           roomMap.set(key, neighbor);
           coords.set(neighbor, nextPos);
-          queue.push(neighbor);
+          activeRooms.push(neighbor);
         }
 
         if (!neighbor.getConnection(OPPOSITE[dir])) {
           current.connect(dir, neighbor);
           neighbor.connect(OPPOSITE[dir], current);
+          connectionsMade++;
         }
+      }
+
+      if (shuffledRooms.length > 0 && connectionsMade < 2) {
+        activeRooms.push(current);
       }
     }
     return roomMap;

@@ -32,7 +32,7 @@ export class GameLoop {
       if (seen.has(entry.name)) continue;
       seen.add(entry.name);
 
-      const aliasText = entry.aliases.length > 0 ? ` (${entry.aliases.join(", ")})` : "";
+      const aliasText = entry.aliases?.length > 0 ? ` (${entry.aliases.join(", ")})` : "";
       const descText = entry.description ? ` - ${entry.description}` : "";
       lines.push(`  ${entry.name}${aliasText}${descText}`);
     }

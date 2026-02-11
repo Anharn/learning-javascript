@@ -18,6 +18,7 @@ import {
   handleRename,
   handleSearch,
   handleMove,
+  randomName,
   Spell
 } from "./game/index.js";
 import spellTemplates from "./data/spells.json" with { type: "json" };
@@ -30,7 +31,7 @@ context.quit = () => { context.quitRequested = true; };
 // Setup player
 function reset() {
     context.map = new GameMap();
-    context.player = new Character("Galahad", 30, 10, { typeid: "player" });
+    context.player = new Character(randomName(), 30, 10, { typeid: "player" });
     const startingWeapon = new Item(pickRandomWeapon());
     const startingItem = new Item(pickRandom(itemTemplates.filter(item => item.type != 'Weapon')));
     const startingSpell = new Spell(pickRandom(spellTemplates));
@@ -71,6 +72,8 @@ registry
   .register("south", () => handleMove("south"), ["s"], "Go South")
   .register("east", () => handleMove("east"), ["e"], "Go East")
   .register("west", () => handleMove("west"), ["w"], "Go West")
+  .register("up", () => handleMove("up"), ['u'], "Climb up the stairs")
+  .register("down", () => handleMove("down"), ['d'], "Climb down the stairs")
   .register("reset", () => reset(), [], "Reset game")
   .register("rename", (_, args) => handleRename(args), [], "Rename yourself: rename <new name>");
 

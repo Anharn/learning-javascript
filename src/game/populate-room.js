@@ -1,11 +1,7 @@
-import { Character, Item } from "./index.js";
+import { Character, Item, pickRandom, randomInt } from "./index.js";
 import enemyTemplates from "../data/enemies.json" with { type: "json" };
 import itemTemplates from "../data/items.json" with { type: "json" };
 import spellTemplates from "../data/spells.json" with { type: "json" };
-
-export const randomInt = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
-export const pickRandom = (list) => list[randomInt(0, list.length - 1)];
 
 export const pickRandomWeapon = () => {
   const weapons = itemTemplates.filter((i) => i.type === "Weapon");

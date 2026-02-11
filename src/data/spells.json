@@ -12,6 +12,7 @@
     {
         "typeid": "spell-magic-missile",
         "name": "MagicMissile",
+        "effect": "targets-additional",
         "damage": 5,
         "manaCost": 2,
         "school": "Arcane",
@@ -53,6 +54,7 @@
     {
         "typeid": "spell-drain-life",
         "name": "DrainLife",
+        "effect": "vamperic",
         "damage": 5,
         "healsUser": 5,
         "manaCost": 5,
@@ -84,6 +86,7 @@
     {
         "typeid": "spell-vampiric-touch",
         "name": "VampiricTouch",
+        "effect": "vamperic",
         "damage": 8,
         "healsUser": 4,
         "manaCost": 6,
@@ -95,6 +98,7 @@
     {
         "typeid": "spell-arcane-blast",
         "name": "ArcaneBlast",
+        "effect": "area",
         "damage": 12,
         "manaCost": 8,
         "school": "Arcane",
@@ -116,6 +120,7 @@
         "typeid": "spell-holy-nova",
         "name": "HolyNova",
         "damage": 5,
+        "effect": "area",
         "healsUser": 5,
         "manaCost": 7,
         "school": "Holy",
@@ -126,6 +131,7 @@
     {
         "typeid": "spell-blizzard",
         "name": "Blizzard",
+        "effect": "area",
         "damage": 9,
         "manaCost": 7,
         "school": "Frost",
@@ -136,8 +142,9 @@
     {
         "typeid": "spell-chain-lightning",
         "name": "ChainLightning",
+        "effect": "targets-additional",
         "damage": 11,
-        "manaCost": 9,
+        "manaCost": 8,
         "school": "Storm",
         "castMessages": [
             "A jagged bolt of electricity arcs through the air!"
